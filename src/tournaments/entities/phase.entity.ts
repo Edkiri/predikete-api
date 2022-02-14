@@ -5,7 +5,6 @@ import { Match } from './match.entity';
 import { Tournament } from './tournaments.entity';
 
 export enum PhaseOptions {
-  GROUP_STAGE = 'group stage',
   SIXTEENTHS_FINAL = 'sixteenths final',
   EIGHTH_FINAL = 'eighth final',
   QUARTERS_FINAL = 'quarters final',
@@ -23,13 +22,9 @@ export class Phase extends BaseEntity implements IPhase {
   @Column({
     type: 'enum',
     enum: PhaseOptions,
-    default: PhaseOptions.GROUP_STAGE,
   })
   phase: PhaseOptions;
 
-  @OneToMany(() => Match, (match) => match.phase)
+  @OneToMany(() => Match, (match) => match.phase, { nullable: true })
   matches: Match[];
-
-  @Column({ type: 'varchar', nullable: true })
-  name: string;
 }

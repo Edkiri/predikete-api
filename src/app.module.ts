@@ -16,10 +16,11 @@ import configSchema from './config/config.schema';
       isGlobal: true,
       validationSchema: configSchema,
     }),
-    UsersModule,
     DatabaseModule,
+    UsersModule,
     AuthModule,
     TournamentsModule,
   ],
+  providers: [],
 })
 export class AppModule {}

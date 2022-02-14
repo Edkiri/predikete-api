@@ -3,6 +3,7 @@ import { Exclude } from 'class-transformer';
 import { Profile } from './profile.entity';
 import { Membership } from './membership.entity';
 import { BaseEntity } from 'src/entities/base.entity';
+import { Role } from '../models/role.model';
 
 @Entity()
 export class User extends BaseEntity {
@@ -15,6 +16,14 @@ export class User extends BaseEntity {
   @Exclude()
   @Column({ type: 'varchar', length: 255 })
   password: string;
+
+  @Exclude()
+  @Column({
+    type: 'enum',
+    enum: Role,
+    default: Role.CLIENT,
+  })
+  role: Role;
 
   @OneToOne(() => Profile, (profile) => profile.user, { nullable: true })
   @JoinColumn({ name: 'profile_id' })
