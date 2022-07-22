@@ -17,6 +17,7 @@ import { MatchesService } from '../services/matches.service';
 @Controller('matches')
 export class MatchesController {
   constructor(private readonly matchesService: MatchesService) {}
+
   @Roles(Role.ADMIN)
   @Put(':id')
   update(

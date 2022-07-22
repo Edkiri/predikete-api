@@ -2,7 +2,7 @@ import { BaseEntity } from 'src/entities/base.entity';
 import { Column, Entity, OneToOne } from 'typeorm';
 import { User } from './user.entity';
 
-@Entity()
+@Entity('profiles')
 export class Profile extends BaseEntity {
   @Column({ type: 'varchar', length: 255, nullable: true })
   picture: string;

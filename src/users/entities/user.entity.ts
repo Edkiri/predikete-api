@@ -5,7 +5,7 @@ import { Membership } from './membership.entity';
 import { BaseEntity } from 'src/entities/base.entity';
 import { Role } from '../models/role.model';
 
-@Entity()
+@Entity('users')
 export class User extends BaseEntity {
   @Column({ type: 'varchar', length: 255, unique: true })
   email: string;

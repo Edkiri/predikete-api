@@ -5,6 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { environments } from './environments';
 import { AuthModule } from './auth/auth.module';
 import { TournamentsModule } from './tournaments/tournaments.module';
+import { PoolsModule } from './pools/pools.module';
 import config from './config/config';
 import configSchema from './config/config.schema';
 
@@ -20,6 +21,7 @@ import configSchema from './config/config.schema';
     UsersModule,
     AuthModule,
     TournamentsModule,
+    PoolsModule,
   ],
   providers: [],
 })

@@ -3,7 +3,7 @@ import { Column, Entity, ManyToOne, JoinColumn } from 'typeorm';
 import { Group } from './group.entity';
 import { User } from './user.entity';
 
-@Entity()
+@Entity('memberships')
 export class Membership extends BaseEntity {
   @ManyToOne(() => User, (user) => user.memberships)
   @JoinColumn({ name: 'user_id' })
@@ -15,11 +15,4 @@ export class Membership extends BaseEntity {
 
   @Column({ type: 'boolean', default: false })
   is_admin: boolean;
-
-  @ManyToOne(() => User, { nullable: true })
-  @JoinColumn({ name: 'invited_by' })
-  invitedBy: User;
-
-  @Column({ type: 'integer', name: 'remaining_invitations', default: 5 })
-  remainingInvitations: number;
 }

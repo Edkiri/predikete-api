@@ -9,7 +9,7 @@ export class CreateUserDto {
   readonly email: string;
 
   @IsString()
-  @Length(4)
+  @Length(4, 10)
   @IsNotEmpty()
   @ApiProperty()
   readonly username: string;

@@ -3,14 +3,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Phase } from '../entities/phase.entity';
 import { MatchesService } from './matches.service';
-import { TournamentsService } from './tournaments.service';
 
 @Injectable()
 export class PhasesService {
   constructor(
     @InjectRepository(Phase)
     private readonly phasesRepo: Repository<Phase>,
-    private readonly tournametsService: TournamentsService,
     private readonly matchesService: MatchesService,
   ) {}
 

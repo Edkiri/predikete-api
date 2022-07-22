@@ -7,6 +7,7 @@ import { MatchesSeederService } from '../matches/matches.service';
 import { tournaments } from './data';
 import { GroupStagesSeederService } from '../phases/group-stages.service';
 import { PhasesSeederService } from '../phases/phases.service';
+import { TeamsSeederService } from '../teams/teams.service';
 
 @Injectable()
 export class TournamentsSeederService {
@@ -16,6 +17,7 @@ export class TournamentsSeederService {
     private readonly phasesService: PhasesSeederService,
     private readonly groupStagesService: GroupStagesSeederService,
     private readonly matchesService: MatchesSeederService,
+    private readonly teamsService: TeamsSeederService,
   ) {}
 
   create(): Array<Promise<Tournament>> {
@@ -26,6 +28,10 @@ export class TournamentsSeederService {
           if (dbTournament) {
             return Promise.resolve(null);
           }
+          const teams = await this.teamsService.getTeamsByName(
+            tournament.teams.map((team) => team.name),
+          );
+          tournament.teams = teams;
           const newTournament = await this.tournamentsRepo.save(tournament);
           await Promise.all(this.groupStagesService.create(newTournament))
             .then(async (groupStages) => {

@@ -28,7 +28,7 @@ export abstract class MatchBaseModel extends BaseEntity {
   penalsVisit: number;
 }
 
-@Entity()
+@Entity('matches')
 export class Match extends MatchBaseModel {
   @ManyToOne(() => Tournament)
   @JoinColumn({ name: 'tournament_id' })
@@ -52,11 +52,35 @@ export class Match extends MatchBaseModel {
   })
   isDefined: boolean;
 
-  @Exclude()
   @Column({
     type: 'boolean',
     name: 'is_finished',
     default: false,
   })
   isFinished: boolean;
+
+  @Column({ type: 'timestamp', name: 'start_at' })
+  startAt: Date;
+
+  @Column({
+    name: 'local_condition',
+    type: 'varchar',
+    length: 11,
+    nullable: true,
+  })
+  localCondition: string;
+
+  @Column({
+    name: 'visit_condition',
+    type: 'varchar',
+    length: 11,
+    nullable: true,
+  })
+  visitCondition: string;
+
+  @Column({
+    type: 'smallint',
+    nullable: true,
+  })
+  journey: number;
 }

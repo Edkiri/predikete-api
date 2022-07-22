@@ -13,7 +13,7 @@ import { Match } from './match.entity';
 import { Team } from './team.entity';
 import { Tournament } from './tournaments.entity';
 
-@Entity()
+@Entity('group_stages')
 export class GroupStage extends BaseEntity implements IGroupStage {
   @ManyToOne(() => Tournament)
   @JoinColumn({ name: 'tournament_id' })

@@ -34,7 +34,9 @@ export class MatchesSeederService {
         groupStage,
         tournament,
         isDefined: true,
-        isFinished: true,
+        isFinished: false,
+        startAt: match.startAt,
+        journey: match.journey,
       });
       return this.matchesRepo.save(newMatch);
     });
@@ -42,23 +44,18 @@ export class MatchesSeederService {
 
   createFinals(tournament: Tournament): Array<Promise<Match>> {
     return final_matches.map(async (match: IMatch) => {
-      const local = await this.teamsService.getByName(match.local);
-      const visit = await this.teamsService.getByName(match.visit);
       const phase = await this.phasesSeederService.getFinalPhase(
         tournament,
         match.phase,
       );
       const newMatch = this.matchesRepo.create({
         tournament,
-        local,
-        visit,
-        goalsLocal: match.goalsLocal,
-        goalsVisit: match.goalsVisit,
-        penalsLocal: match.penalsLocal,
-        penalsVisit: match.penalsVisit,
         phase: phase,
-        isDefined: true,
-        isFinished: true,
+        isDefined: false,
+        isFinished: false,
+        localCondition: match.localCondition || null,
+        visitCondition: match.visitCondition || null,
+        startAt: match.startAt,
       });
       return this.matchesRepo.save(newMatch);
     });

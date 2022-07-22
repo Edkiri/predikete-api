@@ -1,8 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PayloadToken } from 'src/auth/models/token.model';
-import { Repository } from 'typeorm';
-import { CreateGroupDto } from '../dtos/group.dto';
+import { FindCondition, ILike, Repository } from 'typeorm';
+import {
+  CreateGroupDto,
+  FindGorupByNameDto,
+  UpdateGroupDto,
+} from '../dtos/group.dto';
 import { Group } from '../entities/group.entity';
 import { MembershipsService } from './memberships.service';
 import { UsersService } from './users.service';
@@ -34,5 +38,35 @@ export class GroupsService {
     const group = await this.groupsRepo.save(data);
     await this.membershipsService.createAdmin(user, group);
     return group;
+  }
+
+  async update(groupId: number, data: UpdateGroupDto) {
+    const group = await this.findOne(groupId);
+    if (data.picture === null) {
+      data.picture = group.picture;
+    }
+    this.groupsRepo.merge(group, data);
+    return this.groupsRepo.save(group);
+  }
+
+  async findByName(params: FindGorupByNameDto) {
+    const { groupName } = params;
+    const take = params.take || 3;
+    const skip = params.skip || 0;
+    const [result, total] = await this.groupsRepo.findAndCount({
+      where: { name: ILike(`%${groupName}%`) },
+      take,
+      skip,
+    });
+    return {
+      data: result,
+      count: total,
+    };
+  }
+
+  async isMember(groupId: number, userId: number) {
+    const user = await this.userService.findOne(userId);
+    const group = await this.findOne(groupId);
+    return this.membershipsService.isMember(user, group);
   }
 }

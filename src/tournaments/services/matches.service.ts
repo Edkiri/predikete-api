@@ -1,20 +1,33 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
 import { InjectRepository } from '@nestjs/typeorm';
+import { PoolMatch } from 'src/pools/entities/pool-match.entity';
+import { PoolsService } from 'src/pools/services/pools.service';
 import { Repository } from 'typeorm';
 import { UpdateMatchDto } from '../dtos/matches.dto';
 import { GroupStage } from '../entities/group-stage.entity';
 import { Match } from '../entities/match.entity';
+import { Team } from '../entities/team.entity';
+import { Tournament } from '../entities/tournaments.entity';
 import { IStats } from '../models/stats.interdace';
 import { TeamsService } from './teams.service';
 import { TournamentsService } from './tournaments.service';
 
 @Injectable()
 export class MatchesService {
+  private poolService: PoolsService;
   constructor(
     @InjectRepository(Match) private readonly matchesRepo: Repository<Match>,
-    private readonly tournametsService: TournamentsService,
+    private readonly tournamentsService: TournamentsService,
     private readonly teamsServices: TeamsService,
+    private readonly moduleRef: ModuleRef,
   ) {}
+
+  onModuleInit() {
+    this.poolService = this.moduleRef.get(PoolsService, {
+      strict: false,
+    });
+  }
 
   async findOne(id: number) {
     const match = await this.matchesRepo.findOne(id);
@@ -31,10 +44,18 @@ export class MatchesService {
     });
   }
   async getFinalsMatches(tournamentId: number) {
-    const tournament = await this.tournametsService.findOne(tournamentId);
+    const tournament = await this.tournamentsService.findOne(tournamentId);
     const matches = await this.matchesRepo.find({
       where: { tournament, groupStage: null },
       relations: ['local', 'visit', 'phase'],
+    });
+    return matches;
+  }
+
+  async findByTournament(tournament: Tournament) {
+    const matches = await this.matchesRepo.find({
+      where: { tournament },
+      relations: ['local', 'visit'],
     });
     return matches;
   }
@@ -106,6 +127,37 @@ export class MatchesService {
       const visitTeam = await this.teamsServices.findOne(changes.visitId);
       match.visit = visitTeam;
     }
-    return this.matchesRepo.save(match);
+    match.updatedAt = new Date();
+    const updatedMatch = await this.matchesRepo.save(match);
+    this.poolService.calculatePoints(match);
+    return updatedMatch;
+  }
+
+  getWinnerTeam(match: Match | PoolMatch): Team | null {
+    if (match.goalsLocal > match.goalsVisit) {
+      return match.local;
+    } else if (match.goalsLocal < match.goalsVisit) {
+      return match.visit;
+    } else {
+      return null;
+    }
+  }
+
+  getLoosingTeam(match: Match | PoolMatch): Team | null {
+    if (match.goalsLocal > match.goalsVisit) {
+      return match.visit;
+    } else if (match.goalsLocal < match.goalsVisit) {
+      return match.local;
+    } else {
+      return null;
+    }
+  }
+
+  async getLastUpdateDate(): Promise<Date> {
+    const matches = await this.matchesRepo.find();
+    matches.sort((a, b) => {
+      return b.updatedAt.getTime() - a.updatedAt.getTime();
+    });
+    return matches[0].updatedAt;
   }
 }

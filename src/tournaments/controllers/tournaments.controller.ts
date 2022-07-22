@@ -38,6 +38,12 @@ export class TournamentsController {
     return this.tournamentsService.findOne(+id);
   }
 
+  @Public()
+  @Get('group-stage/:groupName')
+  getGroupStage(@Param('groupName') groupName: string) {
+    return this.groupStagesService.findByName(1, groupName);
+  }
+
   @Roles(Role.ADMIN)
   @Put(':id')
   update(

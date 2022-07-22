@@ -13,7 +13,7 @@ export enum PhaseOptions {
   FINAL = 'final',
 }
 
-@Entity()
+@Entity('phases')
 export class Phase extends BaseEntity implements IPhase {
   @ManyToOne(() => Tournament)
   @JoinColumn({ name: 'tournament_id' })
