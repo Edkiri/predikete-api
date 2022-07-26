@@ -15,9 +15,12 @@ import config from 'src/config/config';
           url: postgresUrl,
           autoLoadEntities: true,
           synchronize: env === 'development',
-          ssl: {
-            rejectUnauthorized: false,
-          },
+          ssl:
+            process.env.ENVIROMENT === 'development'
+              ? null
+              : {
+                  rejectUnauthorized: false,
+                },
         };
       },
     }),
