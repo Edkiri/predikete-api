@@ -1,0 +1,15 @@
+module.exports = {
+  type: 'postgres',
+  url: process.env.DATEBASE_URL,
+  synchronize: false,
+  logging: false,
+  migrations: ['src/database/migrations/*.ts'],
+  migrationsName: 'migrations',
+  entities: ['src/**/*.entity.ts'],
+  cli: {
+    migrationsDir: 'src/database/migrations',
+  },
+  ssl: {
+    rejectUnauthorized: false,
+  },
+};
