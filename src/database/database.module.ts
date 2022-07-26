@@ -24,7 +24,5 @@ import config from 'src/config/config';
       },
     }),
   ],
-  providers: [TypeOrmModule],
-  exports: [TypeOrmModule],
 })
 export class DatabaseModule {}
