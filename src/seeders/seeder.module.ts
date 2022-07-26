@@ -9,6 +9,7 @@ import { MatchesSeederModule } from './matches/matches.module';
 import { PhasesSeederModule } from './phases/phases.module';
 import config from 'src/config/config';
 import configSchema from 'src/config/config.schema';
+import { UserSeederModule } from './users/user.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import configSchema from 'src/config/config.schema';
     TournamentsSeederModule,
     MatchesSeederModule,
     PhasesSeederModule,
+    UserSeederModule,
   ],
   providers: [Seeder],
 })

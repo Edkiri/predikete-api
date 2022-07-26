@@ -4,7 +4,7 @@ services:
   postgres:
     image: postgres:13
     environment:
-     - POSTGRES_DB=champions_db
+     - POSTGRES_DB=predikete_db
      - POSTGRES_USER=root
      - POSTGRES_PASSWORD=admin123
     ports:

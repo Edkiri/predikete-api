@@ -10,6 +10,7 @@ import config from 'src/config/config';
       inject: [config.KEY],
       useFactory: (configService: ConfigType<typeof config>) => {
         const { user, host, password, dbName, port } = configService.postgres;
+        const { env } = configService;
         return {
           type: 'postgres',
           username: user,
@@ -18,10 +19,12 @@ import config from 'src/config/config';
           port,
           database: dbName,
           autoLoadEntities: true,
-          synchronize: true,
+          synchronize: env === 'development',
         };
       },
     }),
   ],
+  providers: [TypeOrmModule],
+  exports: [TypeOrmModule],
 })
 export class DatabaseModule {}

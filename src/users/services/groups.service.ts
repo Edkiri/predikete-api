@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PayloadToken } from 'src/auth/models/token.model';
-import { FindCondition, ILike, Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import {
   CreateGroupDto,
   FindGorupByNameDto,

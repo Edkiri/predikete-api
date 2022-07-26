@@ -10,5 +10,6 @@ export default registerAs('config', () => {
       host: process.env.POSTGRES_HOST,
     },
     jwtSecret: process.env.JWT_SECRET,
+    env: process.env.ENVIROMENT || 'development',
   };
 });

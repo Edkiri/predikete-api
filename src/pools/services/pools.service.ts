@@ -148,18 +148,4 @@ export class PoolsService implements OnModuleInit {
       await this.poolsRepo.save(poolMatch.pool);
     }
   }
-
-  // async checkPointsUpdate(pool: Pool) {
-  //   const MatchLastUpdate = await this.matchesService.getLastUpdateDate();
-  //   const PoolLastUpdate = pool.updatedAt;
-  //   const compared = MatchLastUpdate.getTime() > PoolLastUpdate.getTime();
-  //   if (compared) {
-  //     const points = await this.poolMatchesService.getPoolTotalPoints(pool);
-  //     pool.points = points;
-  //     pool.updatedAt = new Date();
-  //     await this.poolsRepo.save(pool);
-  //     return false;
-  //   }
-  //   return true;
-  // }
 }
