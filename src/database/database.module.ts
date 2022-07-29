@@ -16,7 +16,7 @@ import { DataSource } from 'typeorm';
           ssl:
             process.env.NODE_ENV === 'production'
               ? {
-                  rejectUnauthorized: true,
+                  rejectUnauthorized: false,
                 }
               : null,
         };
