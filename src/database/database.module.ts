@@ -13,6 +13,12 @@ import { DataSource } from 'typeorm';
           autoLoadEntities: true,
           synchronize: false,
           logging: false,
+          ssl:
+            process.env.NODE_ENV === 'production'
+              ? {
+                  rejectUnauthorized: true,
+                }
+              : null,
         };
       },
       dataSourceFactory: async (options) => {

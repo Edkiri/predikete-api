@@ -13,6 +13,12 @@ const Config: DataSourceOptions = {
   migrationsTableName: 'migrations',
   synchronize: false,
   logging: false,
+  ssl:
+    process.env.NODE_ENV === 'production'
+      ? {
+          rejectUnauthorized: true,
+        }
+      : null,
 };
 
 export const AppDataSource: DataSource = new DataSource(Config);
