@@ -13,7 +13,7 @@ export class PhasesService {
   ) {}
 
   async findOne(id: number) {
-    const phase = this.phasesRepo.findOne(id);
+    const phase = this.phasesRepo.findOne({ where: { id } });
     if (!phase) {
       throw new NotFoundException(`Phase #${id} not found`);
     }
@@ -22,7 +22,7 @@ export class PhasesService {
 
   async getPhaseStats(tournamentId: number, phaseId: number) {
     return this.phasesRepo.find({
-      where: { id: phaseId, tournament: tournamentId },
+      where: { id: phaseId, tournament: { id: tournamentId } },
     });
   }
 

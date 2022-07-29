@@ -1,5 +1,5 @@
 import { Column, Entity, JoinTable, ManyToMany, OneToMany } from 'typeorm';
-import { BaseEntity } from 'src/entities/base.entity';
+import { BaseEntity } from '../../database/entities/base.entity';
 import { Team } from './team.entity';
 import { GroupStage } from './group-stage.entity';
 

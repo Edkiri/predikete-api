@@ -1,7 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { User } from './user.entity';
 import { Group } from './group.entity';
-import { BaseEntity } from 'src/entities/base.entity';
+import { BaseEntity } from '../../database/entities/base.entity';
 
 @Entity('invitations')
 export class Invitation extends BaseEntity {

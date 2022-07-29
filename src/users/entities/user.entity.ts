@@ -2,7 +2,7 @@ import { Column, Entity, OneToOne, JoinColumn, OneToMany } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { Profile } from './profile.entity';
 import { Membership } from './membership.entity';
-import { BaseEntity } from 'src/entities/base.entity';
+import { BaseEntity } from '../../database/entities/base.entity';
 import { Role } from '../models/role.model';
 
 @Entity('users')

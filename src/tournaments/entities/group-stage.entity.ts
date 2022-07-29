@@ -1,4 +1,4 @@
-import { BaseEntity } from 'src/entities/base.entity';
+import { BaseEntity } from '../../database/entities/base.entity';
 import {
   Column,
   Entity,

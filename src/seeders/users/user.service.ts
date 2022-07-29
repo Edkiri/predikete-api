@@ -19,7 +19,9 @@ export class UserSeederService {
     const adminUsername = process.env.ADMIN_USERNAME;
     const adminEmail = process.env.ADMIN_EMAIL;
     const adminPassword = process.env.ADMIN_PASSWORD;
-    const oldUser = await this.usersRepo.findOne({ username: adminUsername });
+    const oldUser = await this.usersRepo.findOne({
+      where: { username: adminUsername },
+    });
     if (oldUser)
       throw new Error(
         `Error creating admin user - A user with username ${adminUsername} already exists`,

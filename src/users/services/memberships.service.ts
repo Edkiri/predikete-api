@@ -40,8 +40,10 @@ export class MembershipsService {
 
   async findByUserAndGroup(userId: number, groupId: number) {
     const membership = await this.membershipsRepo.findOne({
-      where: { user: userId, group: groupId },
-      relations: ['group'],
+      where: { user: { id: userId }, group: { id: groupId } },
+      relations: {
+        group: true,
+      },
     });
     if (!membership) {
       throw new NotFoundException(
@@ -61,10 +63,16 @@ export class MembershipsService {
     const take = params.take || 3;
     const skip = params.skip || 0;
     const [result, total] = await this.membershipsRepo.findAndCount({
-      where: { user: userId },
+      where: { user: { id: userId } },
       take,
       skip,
-      relations: ['group', 'group.memberships', 'group.memberships.user'],
+      relations: {
+        group: {
+          memberships: {
+            user: true,
+          },
+        },
+      },
     });
     return {
       data: result,
@@ -81,7 +89,9 @@ export class MembershipsService {
   }
 
   async isMember(user: User, group: Group) {
-    const membership = await this.membershipsRepo.findOne({ user, group });
+    const membership = await this.membershipsRepo.findOne({
+      where: { user, group },
+    });
     return Boolean(membership);
   }
 }

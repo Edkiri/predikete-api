@@ -34,13 +34,15 @@ export class PoolsService implements OnModuleInit {
   async findOne(id: number) {
     const pool = this.poolsRepo.findOne({
       where: { id },
-      relations: [
-        'membership',
-        'membership.user',
-        'membership.group',
-        'tournament',
-        'tournament.teams',
-      ],
+      relations: {
+        membership: {
+          user: true,
+          group: true,
+        },
+        tournament: {
+          teams: true,
+        },
+      },
     });
     if (!pool) {
       throw new NotFoundException(`Pool #${id} not found`);
@@ -50,8 +52,12 @@ export class PoolsService implements OnModuleInit {
 
   async countActivePoolsByGroup(membership: Membership): Promise<number> {
     const pools = await this.poolsRepo.find({
-      relations: ['membership', 'membership.group'],
       where: { membership: { group: { id: membership.group.id } } },
+      relations: {
+        membership: {
+          group: true,
+        },
+      },
     });
     return pools.length;
   }
@@ -71,18 +77,24 @@ export class PoolsService implements OnModuleInit {
       where: {
         membership: { user: { id: userId }, group: { id: groupId } },
       },
-      relations: [
-        'membership',
-        'membership.group',
-        'membership.user',
-        'membership.user.profile',
-        'membership.group.memberships',
-        'membership.group.memberships.user',
-        'tournament',
-        'tournament.groupStages',
-        'tournament.groupStages.teams',
-        'tournament.teams',
-      ],
+      relations: {
+        membership: {
+          group: {
+            memberships: {
+              user: true,
+            },
+          },
+          user: {
+            profile: true,
+          },
+        },
+        tournament: {
+          groupStages: {
+            teams: true,
+          },
+          teams: true,
+        },
+      },
     });
     if (!pool) {
       throw new NotFoundException(`Pool not found`);
@@ -117,12 +129,14 @@ export class PoolsService implements OnModuleInit {
   async findByGroupId(groupId: number) {
     return this.poolsRepo.find({
       where: { membership: { group: { id: groupId } } },
-      relations: [
-        'membership',
-        'membership.group',
-        'membership.user',
-        'membership.user.profile',
-      ],
+      relations: {
+        membership: {
+          group: true,
+          user: {
+            profile: true,
+          },
+        },
+      },
       order: { points: 'DESC' },
     });
   }

@@ -15,20 +15,22 @@ export class PhasesSeederService {
 
   async getFinalPhase(tournament: Tournament, phaseOption: PhaseOptions) {
     const phase = await this.phasesRepo.findOne({
-      tournament,
-      phase: phaseOption,
+      where: {
+        tournament,
+        phase: phaseOption,
+      },
     });
     return phase;
   }
 
   async findByOption(option: PhaseOptions) {
-    return this.phasesRepo.findOne({ phase: option });
+    return this.phasesRepo.findOne({ where: { phase: option } });
   }
 
   create(tournament: Tournament): Array<Promise<Phase>> {
     return phases.map(async (phase: IPhase) => {
       return await this.phasesRepo
-        .findOne({ tournament: tournament })
+        .findOne({ where: { tournament } })
         .then(async (dbPhase) => {
           if (dbPhase) {
             return Promise.resolve(null);

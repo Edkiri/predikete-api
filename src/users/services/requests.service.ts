@@ -23,14 +23,18 @@ export class RequestsService {
   ) {}
 
   async findOne(id: number) {
-    const request = await this.requestsRepo.findOne(id, {
-      relations: [
-        'group',
-        'group.memberships',
-        'group.memberships.user',
-        'issuedBy',
-        'issuedBy.profile',
-      ],
+    const request = await this.requestsRepo.findOne({
+      where: { id },
+      relations: {
+        group: {
+          memberships: {
+            user: true,
+          },
+        },
+        issuedBy: {
+          profile: true,
+        },
+      },
     });
     if (!request) {
       throw new NotFoundException(`Request #${id} not found`);
@@ -43,12 +47,14 @@ export class RequestsService {
     const groupIds = memberships.map((membership) => membership.group.id);
     const requests = await this.requestsRepo.find({
       where: { group: { id: In(groupIds) } },
-      relations: [
-        'group',
-        'group.memberships',
-        'group.memberships.user',
-        'issuedBy',
-      ],
+      relations: {
+        group: {
+          memberships: {
+            user: true,
+          },
+        },
+        issuedBy: true,
+      },
     });
     for (const request of requests) {
       request['type'] = 'request';
@@ -60,8 +66,10 @@ export class RequestsService {
     const user = await this.usersService.findOne(userId);
     const group = await this.groupsService.findOne(groupId);
     const oldRequest = await this.requestsRepo.findOne({
-      issuedBy: user,
-      group,
+      where: {
+        issuedBy: user,
+        group,
+      },
     });
     if (oldRequest) {
       throw new BadRequestException(

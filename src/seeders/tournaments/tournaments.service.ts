@@ -23,7 +23,7 @@ export class TournamentsSeederService {
   create(): Array<Promise<Tournament>> {
     return tournaments.map(async (tournament: ITournament) => {
       return await this.tournamentsRepo
-        .findOne({ name: tournament.name })
+        .findOne({ where: { name: tournament.name } })
         .then(async (dbTournament) => {
           if (dbTournament) {
             return Promise.resolve(null);

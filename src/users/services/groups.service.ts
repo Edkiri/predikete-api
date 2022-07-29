@@ -20,12 +20,15 @@ export class GroupsService {
   ) {}
 
   async findOne(id: number) {
-    const group = this.groupsRepo.findOne(id, {
-      relations: [
-        'memberships',
-        'memberships.user',
-        'memberships.user.profile',
-      ],
+    const group = this.groupsRepo.findOne({
+      where: { id },
+      relations: {
+        memberships: {
+          user: {
+            profile: true,
+          },
+        },
+      },
     });
     if (!group) {
       throw new NotFoundException(`Group #${id} not found`);

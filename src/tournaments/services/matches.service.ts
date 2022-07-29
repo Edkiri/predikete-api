@@ -30,7 +30,7 @@ export class MatchesService {
   }
 
   async findOne(id: number) {
-    const match = await this.matchesRepo.findOne(id);
+    const match = await this.matchesRepo.findOne({ where: { id } });
     if (!match) {
       throw new NotFoundException(`Match #${id} not found`);
     }
@@ -40,14 +40,21 @@ export class MatchesService {
   async getMatchesByGroupStage(groupStage: GroupStage) {
     return this.matchesRepo.find({
       where: { groupStage },
-      relations: ['local', 'visit'],
+      relations: {
+        local: true,
+        visit: true,
+      },
     });
   }
   async getFinalsMatches(tournamentId: number) {
     const tournament = await this.tournamentsService.findOne(tournamentId);
     const matches = await this.matchesRepo.find({
       where: { tournament, groupStage: null },
-      relations: ['local', 'visit', 'phase'],
+      relations: {
+        local: true,
+        visit: true,
+        phase: true,
+      },
     });
     return matches;
   }
@@ -55,7 +62,10 @@ export class MatchesService {
   async findByTournament(tournament: Tournament) {
     const matches = await this.matchesRepo.find({
       where: { tournament },
-      relations: ['local', 'visit'],
+      relations: {
+        local: true,
+        visit: true,
+      },
     });
     return matches;
   }
@@ -63,7 +73,10 @@ export class MatchesService {
   async getGroupStageStats(groupStage: GroupStage): Promise<IStats[]> {
     const matches = await this.matchesRepo.find({
       where: { groupStage },
-      relations: ['local', 'visit'],
+      relations: {
+        local: true,
+        visit: true,
+      },
     });
     const stats: IStats[] = groupStage.teams.map((team) => {
       return {

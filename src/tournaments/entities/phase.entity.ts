@@ -1,5 +1,5 @@
-import { BaseEntity } from 'src/entities/base.entity';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import { BaseEntity } from '../../database/entities/base.entity';
 import { IPhase } from '../models/phase.interface';
 import { Match } from './match.entity';
 import { Tournament } from './tournaments.entity';

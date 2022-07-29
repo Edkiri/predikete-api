@@ -16,13 +16,13 @@ export class GroupStagesSeederService {
   ) {}
 
   async getGroupByName(tournament: Tournament, name: string) {
-    return this.groupStagesRepo.findOne({ tournament, name });
+    return this.groupStagesRepo.findOne({ where: { tournament, name } });
   }
 
   create(tournament: Tournament): Array<Promise<GroupStage>> {
     return groupStages.map(async (groupStage: IGroupStage) => {
       return await this.groupStagesRepo
-        .findOne({ name: groupStage.name, tournament: tournament })
+        .findOne({ where: { name: groupStage.name, tournament } })
         .then(async (dbGroupStage) => {
           if (dbGroupStage) {
             return Promise.resolve(null);

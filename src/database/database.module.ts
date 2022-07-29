@@ -1,27 +1,23 @@
 import { Module, Global } from '@nestjs/common';
-import { ConfigType } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import config from 'src/config/config';
+import { DataSource } from 'typeorm';
 
 @Global()
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
-      inject: [config.KEY],
-      useFactory: (configService: ConfigType<typeof config>) => {
-        const { env, postgresUrl } = configService;
+      useFactory: () => {
         return {
           type: 'postgres',
-          url: postgresUrl,
+          url: process.env.DATABASE_URL,
           autoLoadEntities: true,
-          synchronize: env === 'development',
-          ssl:
-            process.env.ENVIROMENT === 'development'
-              ? null
-              : {
-                  rejectUnauthorized: false,
-                },
+          synchronize: false,
+          logging: false,
         };
+      },
+      dataSourceFactory: async (options) => {
+        const dataSource = await new DataSource(options).initialize();
+        return dataSource;
       },
     }),
   ],

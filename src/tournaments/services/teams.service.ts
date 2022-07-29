@@ -10,7 +10,7 @@ export class TeamsService {
   ) {}
 
   async findOne(id: number) {
-    const team = await this.teamsRepo.findOne(id);
+    const team = await this.teamsRepo.findOne({ where: { id } });
     if (!team) {
       throw new NotFoundException(`Team #${id} not found`);
     }

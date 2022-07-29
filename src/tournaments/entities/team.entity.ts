@@ -1,6 +1,6 @@
 import { Column, Entity } from 'typeorm';
 
-import { BaseEntity } from 'src/entities/base.entity';
+import { BaseEntity } from '../../database/entities/base.entity';
 import { ITeam } from '../models/team.interface';
 
 @Entity('teams')

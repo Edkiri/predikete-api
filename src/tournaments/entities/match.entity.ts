@@ -1,32 +1,9 @@
-import { BaseEntity } from 'src/entities/base.entity';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Exclude } from 'class-transformer';
 import { GroupStage } from './group-stage.entity';
 import { Phase } from './phase.entity';
-import { Team } from './team.entity';
 import { Tournament } from './tournaments.entity';
-import { Exclude } from 'class-transformer';
-
-export abstract class MatchBaseModel extends BaseEntity {
-  @ManyToOne(() => Team, { nullable: true })
-  @JoinColumn({ name: 'local_team_id' })
-  local: Team;
-
-  @ManyToOne(() => Team, { nullable: true })
-  @JoinColumn({ name: 'visit_team_id' })
-  visit: Team;
-
-  @Column({ type: 'int', name: 'goals_local', nullable: true })
-  goalsLocal: number;
-
-  @Column({ type: 'int', name: 'goals_visit', nullable: true })
-  goalsVisit: number;
-
-  @Column({ type: 'int', name: 'penals_local', nullable: true })
-  penalsLocal: number;
-
-  @Column({ type: 'int', name: 'penals_visit', nullable: true })
-  penalsVisit: number;
-}
+import { MatchBaseModel } from './match.entity-abs';
 
 @Entity('matches')
 export class Match extends MatchBaseModel {

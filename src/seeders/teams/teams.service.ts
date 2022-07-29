@@ -13,7 +13,7 @@ export class TeamsSeederService {
   ) {}
 
   async getByName(name: string): Promise<Team> {
-    const team = this.teamRepo.findOne({ name });
+    const team = this.teamRepo.findOne({ where: { name } });
     if (!team) {
       throw new NotFoundException(`Team '${name}' not found`);
     }
@@ -21,14 +21,14 @@ export class TeamsSeederService {
   }
 
   async getTeamsByName(teamNames: string[]): Promise<Team[]> {
-    const teams = await this.teamRepo.find({ name: In(teamNames) });
+    const teams = await this.teamRepo.find({ where: { name: In(teamNames) } });
     return teams;
   }
 
   create(): Array<Promise<Team>> {
     return teams.map(async (team: ITeam) => {
       return await this.teamRepo
-        .findOne({ name: team.name })
+        .findOne({ where: { name: team.name } })
         .then(async (dbTeam) => {
           if (dbTeam) {
             return Promise.resolve(null);

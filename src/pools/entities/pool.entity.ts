@@ -1,7 +1,7 @@
-import { BaseEntity } from 'src/entities/base.entity';
-import { Tournament } from 'src/tournaments/entities/tournaments.entity';
-import { Membership } from 'src/users/entities/membership.entity';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { BaseEntity } from '../../database/entities/base.entity';
+import { Tournament } from '../../tournaments/entities/tournaments.entity';
+import { Membership } from '../../users/entities/membership.entity';
 
 @Entity('pools')
 export class Pool extends BaseEntity {

@@ -35,7 +35,14 @@ export class PoolMatchesService implements OnModuleInit {
   async findOne(id: number) {
     const poolMatch = await this.poolMatchesRepo.findOne({
       where: { id },
-      relations: ['local', 'visit', 'match', 'match.local', 'match.visit'],
+      relations: {
+        local: true,
+        visit: true,
+        match: {
+          local: true,
+          visit: true,
+        },
+      },
     });
     return poolMatch;
   }
@@ -43,7 +50,9 @@ export class PoolMatchesService implements OnModuleInit {
   async belongsToPool(id: number, poolId: number) {
     const poolMatch = await this.poolMatchesRepo.findOne({
       where: { id, pool: { id: poolId } },
-      relations: ['pool'],
+      relations: {
+        pool: true,
+      },
     });
     return poolMatch;
   }
@@ -51,15 +60,26 @@ export class PoolMatchesService implements OnModuleInit {
   async listGSPoolMatches(poolId: number) {
     const GSpoolMatches = await this.poolMatchesRepo.find({
       where: { pool: { id: poolId }, match: { groupStage: Not(IsNull()) } },
-      relations: [
-        'match',
-        'match.groupStage',
-        'match.groupStage.teams',
-        'local',
-        'visit',
-        'match.local',
-        'match.visit',
-      ],
+      // relations: [
+      //   'local',
+      //   'visit',
+      //   'match',
+      //   'match.groupStage',
+      //   'match.groupStage.teams',
+      //   'match.local',
+      //   'match.visit',
+      // ],
+      relations: {
+        local: true,
+        visit: true,
+        match: {
+          groupStage: {
+            teams: true,
+          },
+          local: true,
+          visit: true,
+        },
+      },
     });
     return GSpoolMatches;
   }
@@ -70,14 +90,15 @@ export class PoolMatchesService implements OnModuleInit {
         pool: { id: poolId },
         match: { phase: Not(IsNull()) },
       },
-      relations: [
-        'match',
-        'match.phase',
-        'local',
-        'visit',
-        'match.local',
-        'match.visit',
-      ],
+      relations: {
+        local: true,
+        visit: true,
+        match: {
+          local: true,
+          visit: true,
+          phase: true,
+        },
+      },
     });
     return FPspoolMatches;
   }
@@ -102,8 +123,11 @@ export class PoolMatchesService implements OnModuleInit {
   }
 
   async getPoolMatchDetails(groupId: number, poolMatchId: number) {
-    const poolMatch = await this.poolMatchesRepo.findOne(poolMatchId, {
-      relations: ['match'],
+    const poolMatch = await this.poolMatchesRepo.findOne({
+      where: { id: poolMatchId },
+      relations: {
+        match: true,
+      },
     });
     const poolMatches = await this.poolMatchesRepo.find({
       where: {
@@ -112,18 +136,22 @@ export class PoolMatchesService implements OnModuleInit {
         },
         match: { id: poolMatch.match.id },
       },
-      relations: [
-        'pool',
-        'pool.membership',
-        'pool.membership.group',
-        'pool.membership.user',
-        'pool.membership.user.profile',
-        'match',
-        'match.local',
-        'match.visit',
-        'local',
-        'visit',
-      ],
+      relations: {
+        pool: {
+          membership: {
+            group: true,
+            user: {
+              profile: true,
+            },
+          },
+        },
+        match: {
+          local: true,
+          visit: true,
+        },
+        local: true,
+        visit: true,
+      },
     });
     return poolMatches;
   }
@@ -208,15 +236,16 @@ export class PoolMatchesService implements OnModuleInit {
   async findNextMatch(pool: Pool) {
     const poolMatches = await this.poolMatchesRepo.find({
       where: { pool, match: { startAt: MoreThanOrEqual(new Date()) } },
-      relations: [
-        'local',
-        'visit',
-        'match',
-        'match.local',
-        'match.visit',
-        'match.groupStage',
-        'match.phase',
-      ],
+      relations: {
+        local: true,
+        visit: true,
+        match: {
+          local: true,
+          visit: true,
+          groupStage: true,
+          phase: true,
+        },
+      },
     });
     const nextPoolMatch = poolMatches.sort((a, b) => {
       return a.match.startAt.getTime() - b.match.startAt.getTime();
@@ -227,15 +256,16 @@ export class PoolMatchesService implements OnModuleInit {
   async findPreviusMatch(pool: Pool) {
     const poolMatches = await this.poolMatchesRepo.find({
       where: { pool, match: { startAt: LessThan(new Date()) } },
-      relations: [
-        'local',
-        'visit',
-        'match',
-        'match.local',
-        'match.visit',
-        'match.groupStage',
-        'match.phase',
-      ],
+      relations: {
+        local: true,
+        visit: true,
+        match: {
+          local: true,
+          visit: true,
+          groupStage: true,
+          phase: true,
+        },
+      },
     });
     const previusPoolMatch = poolMatches.sort((a, b) => {
       return b.match.startAt.getTime() - a.match.startAt.getTime();
@@ -246,15 +276,16 @@ export class PoolMatchesService implements OnModuleInit {
   async getPoolMatchesByMatch(match: Match) {
     const poolMatches = await this.poolMatchesRepo.find({
       where: { match, isCalculated: false },
-      relations: [
-        'pool',
-        'local',
-        'visit',
-        'match',
-        'match.local',
-        'match.visit',
-        'match.phase',
-      ],
+      relations: {
+        pool: true,
+        local: true,
+        visit: true,
+        match: {
+          local: true,
+          visit: true,
+          phase: true,
+        },
+      },
     });
 
     return poolMatches;

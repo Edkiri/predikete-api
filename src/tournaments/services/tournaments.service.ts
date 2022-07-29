@@ -16,7 +16,7 @@ export class TournamentsService {
   }
 
   async findOne(id: number) {
-    const tournament = await this.tournamentsRepo.findOne(id);
+    const tournament = await this.tournamentsRepo.findOne({ where: { id } });
     if (!tournament) {
       throw new NotFoundException(`Tournament #${id} not found`);
     }

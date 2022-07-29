@@ -5,21 +5,18 @@ import {
   Param,
   ParseIntPipe,
   Post,
-  Req,
   Res,
   UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { uuid } from 'uuidv4';
-import { Request, Express } from 'express';
 import { UsersService } from '../services/users.service';
 import { CreateUserDto } from '../dtos/user.dto';
 import { UpdateProfileDto } from '../dtos/profile.dto';
 import { ProfilesService } from '../services/profiles.service';
 import { Public } from 'src/auth/decorators/public.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
-import { PayloadToken } from 'src/auth/models/token.model';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import path = require('path');

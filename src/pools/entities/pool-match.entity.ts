@@ -1,5 +1,6 @@
-import { Match, MatchBaseModel } from 'src/tournaments/entities/match.entity';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { MatchBaseModel } from '../../tournaments/entities/match.entity-abs';
+import { Match } from '../../tournaments/entities/match.entity';
 import { Pool } from './pool.entity';
 
 @Entity('pools_matches')

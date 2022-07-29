@@ -15,7 +15,7 @@ export class GroupStagesService {
   ) {}
 
   async findOne(id: number) {
-    const groupStage = this.groupStagesRepo.findOne(id);
+    const groupStage = this.groupStagesRepo.findOneBy({ id });
     if (!groupStage) {
       throw new NotFoundException(`Group #${id} not found`);
     }
@@ -24,8 +24,10 @@ export class GroupStagesService {
 
   async findByName(tournamentId: number, name: string) {
     const groupStage = await this.groupStagesRepo.findOne({
-      where: { tournament: tournamentId, name: name.toUpperCase() },
-      relations: ['teams'],
+      where: { name: name.toUpperCase(), tournament: { id: tournamentId } },
+      relations: {
+        teams: true,
+      },
     });
     if (!groupStage) {
       throw new NotFoundException(`Group '${name}' not found`);

@@ -25,15 +25,19 @@ export class InvitationsService {
   ) {}
 
   async findOne(id: number) {
-    const invitation = await this.invitationsRepo.findOne(id, {
-      relations: [
-        'group',
-        'group.memberships',
-        'group.memberships.user',
-        'issuedBy',
-        'issuedBy.profile',
-        'issuedTo',
-      ],
+    const invitation = await this.invitationsRepo.findOne({
+      where: { id },
+      relations: {
+        group: {
+          memberships: {
+            user: true,
+          },
+        },
+        issuedBy: {
+          profile: true,
+        },
+        issuedTo: true,
+      },
     });
     if (!invitation) {
       throw new NotFoundException(`Invitation #${id} not found`);
@@ -44,12 +48,14 @@ export class InvitationsService {
   async findByUser(user: User) {
     const invitations = await this.invitationsRepo.find({
       where: { issuedTo: user },
-      relations: [
-        'group',
-        'issuedBy',
-        'group.memberships',
-        'group.memberships.user',
-      ],
+      relations: {
+        group: {
+          memberships: {
+            user: true,
+          },
+        },
+        issuedBy: true,
+      },
     });
     for (const invitation of invitations) {
       invitation['type'] = 'invitation';
@@ -68,9 +74,11 @@ export class InvitationsService {
     }
     const issuedBy = await this.userService.findOne(user.sub);
     const oldInvitation = await this.invitationsRepo.findOne({
-      issuedBy,
-      issuedTo,
-      group,
+      where: {
+        issuedBy,
+        issuedTo,
+        group,
+      },
     });
     if (oldInvitation) {
       throw new BadRequestException('You have already invited this user');

@@ -28,11 +28,14 @@ export class UsersService {
   }
 
   async find() {
-    return this.usersRepo.find({ relations: ['profile'] });
+    return this.usersRepo.find({ relations: { profile: true } });
   }
 
   async findOne(id: number) {
-    const user = await this.usersRepo.findOne(id, { relations: ['profile'] });
+    const user = await this.usersRepo.findOne({
+      where: { id },
+      relations: { profile: true },
+    });
     if (!user) {
       throw new NotFoundException(`User #${id} not found`);
     }
@@ -66,7 +69,9 @@ export class UsersService {
   async findByEmail(email: string) {
     const user = await this.usersRepo.findOne({
       where: { email },
-      relations: ['profile'],
+      relations: {
+        profile: true,
+      },
     });
     if (!user) {
       throw new NotFoundException(`User not found`);

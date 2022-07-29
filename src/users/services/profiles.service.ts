@@ -14,7 +14,12 @@ export class ProfilesService {
   ) {}
 
   async findOne(id: number) {
-    const profile = await this.profileRepo.findOne(id, { relations: ['user'] });
+    const profile = await this.profileRepo.findOne({
+      where: { id },
+      relations: {
+        user: true,
+      },
+    });
     if (!profile) {
       throw new NotFoundException(`Profile #${id} not found`);
     }
