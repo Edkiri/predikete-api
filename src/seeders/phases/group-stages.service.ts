@@ -16,7 +16,9 @@ export class GroupStagesSeederService {
   ) {}
 
   async getGroupByName(tournament: Tournament, name: string) {
-    return this.groupStagesRepo.findOne({ where: { tournament, name } });
+    return this.groupStagesRepo.findOne({
+      where: { tournament: { id: tournament.id }, name },
+    });
   }
 
   create(tournament: Tournament): Array<Promise<GroupStage>> {

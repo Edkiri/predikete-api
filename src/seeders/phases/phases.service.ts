@@ -16,7 +16,7 @@ export class PhasesSeederService {
   async getFinalPhase(tournament: Tournament, phaseOption: PhaseOptions) {
     const phase = await this.phasesRepo.findOne({
       where: {
-        tournament,
+        tournament: { id: tournament.id },
         phase: phaseOption,
       },
     });

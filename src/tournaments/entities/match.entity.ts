@@ -42,7 +42,7 @@ export class Match extends MatchBaseModel {
   @Column({
     name: 'local_condition',
     type: 'varchar',
-    length: 11,
+    length: 30,
     nullable: true,
   })
   localCondition: string;
@@ -50,7 +50,7 @@ export class Match extends MatchBaseModel {
   @Column({
     name: 'visit_condition',
     type: 'varchar',
-    length: 11,
+    length: 30,
     nullable: true,
   })
   visitCondition: string;

@@ -47,7 +47,7 @@ export class InvitationsService {
 
   async findByUser(user: User) {
     const invitations = await this.invitationsRepo.find({
-      where: { issuedTo: user },
+      where: { issuedTo: { id: user.id } },
       relations: {
         group: {
           memberships: {

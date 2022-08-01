@@ -590,6 +590,8 @@ export const final_matches: IMatch[] = [
     // goalsLocal: 2,
     // goalsVisit: 3,
     phase: PhaseOptions.THITD_AND_FOURTH,
+    localCondition: 'semi final looser',
+    visitCondition: 'semi final looser',
     startAt: DateTime.utc(2022, 11, 17, 15, 0, 0),
   },
   {
@@ -598,6 +600,8 @@ export const final_matches: IMatch[] = [
     // goalsLocal: 0,
     // goalsVisit: 1,
     phase: PhaseOptions.FINAL,
+    localCondition: 'semi final winner',
+    visitCondition: 'semi final winner',
     startAt: DateTime.utc(2022, 11, 18, 15, 0, 0),
   },
 ];

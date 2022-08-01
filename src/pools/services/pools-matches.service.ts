@@ -7,7 +7,14 @@ import { PhaseOptions } from 'src/tournaments/entities/phase.entity';
 import { MatchesService } from 'src/tournaments/services/matches.service';
 import { TeamsService } from 'src/tournaments/services/teams.service';
 import { UsersService } from 'src/users/services/users.service';
-import { IsNull, LessThan, MoreThanOrEqual, Not, Repository } from 'typeorm';
+import {
+  DataSource,
+  IsNull,
+  LessThan,
+  MoreThanOrEqual,
+  Not,
+  Repository,
+} from 'typeorm';
 import { PoolMatchDto } from '../dtos/pool-match.dto';
 import { PoolMatch } from '../entities/pool-match.entity';
 import { Pool } from '../entities/pool.entity';
@@ -21,6 +28,7 @@ export class PoolMatchesService implements OnModuleInit {
     private readonly poolMatchesRepo: Repository<PoolMatch>,
     private readonly teamsServices: TeamsService,
     private readonly moduleRef: ModuleRef,
+    private readonly dataSoruce: DataSource,
   ) {}
 
   onModuleInit() {
@@ -58,17 +66,8 @@ export class PoolMatchesService implements OnModuleInit {
   }
 
   async listGSPoolMatches(poolId: number) {
-    const GSpoolMatches = await this.poolMatchesRepo.find({
-      where: { pool: { id: poolId }, match: { groupStage: Not(IsNull()) } },
-      // relations: [
-      //   'local',
-      //   'visit',
-      //   'match',
-      //   'match.groupStage',
-      //   'match.groupStage.teams',
-      //   'match.local',
-      //   'match.visit',
-      // ],
+    const GSpoolMatches = await this.dataSoruce.getRepository(PoolMatch).find({
+      where: { pool: { id: poolId }, match: { localCondition: IsNull() } },
       relations: {
         local: true,
         visit: true,
@@ -88,7 +87,7 @@ export class PoolMatchesService implements OnModuleInit {
     const FPspoolMatches = await this.poolMatchesRepo.find({
       where: {
         pool: { id: poolId },
-        match: { phase: Not(IsNull()) },
+        match: { localCondition: Not(IsNull()) },
       },
       relations: {
         local: true,
@@ -235,7 +234,10 @@ export class PoolMatchesService implements OnModuleInit {
 
   async findNextMatch(pool: Pool) {
     const poolMatches = await this.poolMatchesRepo.find({
-      where: { pool, match: { startAt: MoreThanOrEqual(new Date()) } },
+      where: {
+        pool: { id: pool.id },
+        match: { startAt: MoreThanOrEqual(new Date()) },
+      },
       relations: {
         local: true,
         visit: true,
@@ -255,7 +257,10 @@ export class PoolMatchesService implements OnModuleInit {
 
   async findPreviusMatch(pool: Pool) {
     const poolMatches = await this.poolMatchesRepo.find({
-      where: { pool, match: { startAt: LessThan(new Date()) } },
+      where: {
+        pool: { id: pool.id },
+        match: { startAt: LessThan(new Date()) },
+      },
       relations: {
         local: true,
         visit: true,
@@ -275,7 +280,7 @@ export class PoolMatchesService implements OnModuleInit {
 
   async getPoolMatchesByMatch(match: Match) {
     const poolMatches = await this.poolMatchesRepo.find({
-      where: { match, isCalculated: false },
+      where: { match: { id: match.id }, isCalculated: false },
       relations: {
         pool: true,
         local: true,

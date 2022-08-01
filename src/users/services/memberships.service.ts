@@ -82,7 +82,7 @@ export class MembershipsService {
 
   async findAdminGroups(user: User) {
     const memberships = await this.membershipsRepo.find({
-      where: { user, is_admin: true },
+      where: { user: { id: user.id }, is_admin: true },
       relations: ['group', 'user'],
     });
     return memberships;
@@ -90,7 +90,7 @@ export class MembershipsService {
 
   async isMember(user: User, group: Group) {
     const membership = await this.membershipsRepo.findOne({
-      where: { user, group },
+      where: { user: { id: user.id }, group: { id: group.id } },
     });
     return Boolean(membership);
   }

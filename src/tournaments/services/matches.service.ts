@@ -61,7 +61,7 @@ export class MatchesService {
 
   async findByTournament(tournament: Tournament) {
     const matches = await this.matchesRepo.find({
-      where: { tournament },
+      where: { tournament: { id: tournament.id } },
       relations: {
         local: true,
         visit: true,
