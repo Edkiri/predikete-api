@@ -31,7 +31,7 @@
   "bugs": {
     "url": "https://github.com/Edkiri/predikete-api/issues"
   },
-  "homepage": ".",
+  "homepage": "https://github.com/Edkiri/predikete-api#readme",
   "dependencies": {
     "@nestjs/config": "^2.2.0",
     "@nestjs/core": "^9.0.5",
