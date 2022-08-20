@@ -1,11 +1,10 @@
 import { Module } from '@nestjs/common';
-import { UsersModule } from './users/users.module';
 import { DatabaseModule } from './database/database.module';
 import { ConfigModule } from '@nestjs/config';
 import { environments } from './environments';
 import { AuthModule } from './auth/auth.module';
-import { TournamentsModule } from './tournaments/tournaments.module';
-import { PoolsModule } from './pools/pools.module';
+import { GroupModule } from './group/group.module';
+import { UserModule } from './user/user.module';
 import config from './config/config';
 import configSchema from './config/config.schema';
 
@@ -18,11 +17,11 @@ import configSchema from './config/config.schema';
       validationSchema: configSchema,
     }),
     DatabaseModule,
-    UsersModule,
     AuthModule,
-    TournamentsModule,
-    PoolsModule,
+    GroupModule,
+    UserModule,
   ],
   providers: [],
+  controllers: [],
 })
 export class AppModule {}

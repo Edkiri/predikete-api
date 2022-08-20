@@ -10,6 +10,7 @@ async function bootstrap() {
     new ValidationPipe({
       whitelist: true,
       forbidNonWhitelisted: true,
+      forbidUnknownValues: true,
       transformOptions: {
         enableImplicitConversion: true,
       },
@@ -18,9 +19,12 @@ async function bootstrap() {
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
   const config = new DocumentBuilder()
-    .setTitle('API')
-    .setDescription('CHAMPIONS')
-    .setVersion('1.0')
+    .setTitle('Predikete REST API')
+    .setDescription(
+      'This is a Backend for an application that allows users predict tournaments results and compete with each other.',
+    )
+    .setVersion('1.1')
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

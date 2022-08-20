@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
-import { Role } from 'src/users/models/role.model';
+import { Role } from 'src/user/model/role.enum';
 import { ROLES_KEY } from '../decorators/roles.decorators';
 import { PayloadToken } from '../models/token.model';
 

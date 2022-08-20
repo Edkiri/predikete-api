@@ -11,6 +11,7 @@ import { DataSource } from 'typeorm';
           type: 'postgres',
           url: process.env.DATABASE_URL,
           autoLoadEntities: true,
+          entities: [__dirname + '/../**/*.model.ts'],
           synchronize: false,
           logging: false,
           ssl:
