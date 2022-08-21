@@ -1,22 +1,23 @@
-import { BaseEntity } from '../../database/model/base.model-abstract';
+import { BaseEntity } from '../../database/entities/base.entity-abstract';
 import { Column, Entity, OneToMany } from 'typeorm';
 import {
   ApiModelProperty,
   ApiModelPropertyOptional,
 } from '@nestjs/swagger/dist/decorators/api-model-property.decorator';
-import { Membership } from './membership.model';
+import { Membership } from './membership.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity({ name: 'group' })
 export class Group extends BaseEntity {
   @ApiModelProperty()
-  @Column({ unique: true })
+  @Column()
   name!: string;
 
   @ApiModelPropertyOptional()
-  @Column({ type: 'text', nullable: true })
+  @Column({ nullable: true, length: 100 })
   about?: string;
 
-  @ApiModelProperty()
+  @Exclude()
   @OneToMany(() => Membership, (membership) => membership.group)
   memberships!: Membership[];
 

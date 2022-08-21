@@ -1,5 +1,9 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { ApiModelProperty } from '@nestjs/swagger/dist/decorators/api-model-property.decorator';
-import { User } from 'src/user/model/user.model';
+import { User } from 'src/user/entities/user.entity';
+
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 export class LoginResponseDto {
   constructor({ access_token, user }: LoginResponseDto) {
@@ -7,7 +11,9 @@ export class LoginResponseDto {
     this.user = user;
   }
 
-  @ApiModelProperty({ description: 'Valid for 7d. No refresh.' })
+  @ApiProperty({
+    description: `Valid for only ${process.env.JWT_VALID_DAYS} days.`,
+  })
   access_token!: string;
 
   @ApiModelProperty({ type: () => User })

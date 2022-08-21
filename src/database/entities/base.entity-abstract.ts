@@ -4,12 +4,15 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
+import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 
 export abstract class BaseEntity {
   @PrimaryGeneratedColumn()
+  @ApiProperty()
   id: number;
 
   @Exclude()
+  @ApiHideProperty()
   @CreateDateColumn({
     name: 'created_at',
     type: 'timestamptz',
@@ -18,6 +21,7 @@ export abstract class BaseEntity {
   createdAt: Date;
 
   @Exclude()
+  @ApiHideProperty()
   @UpdateDateColumn({
     name: 'updated_at',
     type: 'timestamptz',

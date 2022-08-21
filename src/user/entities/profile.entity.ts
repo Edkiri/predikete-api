@@ -1,7 +1,7 @@
 import { ApiModelPropertyOptional } from '@nestjs/swagger/dist/decorators/api-model-property.decorator';
 import { Column, Entity, OneToOne } from 'typeorm';
-import { BaseEntity } from '../../database/model/base.model-abstract';
-import { User } from './user.model';
+import { BaseEntity } from '../../database/entities/base.entity-abstract';
+import { User } from './user.entity';
 
 @Entity({ name: 'profile' })
 export class Profile extends BaseEntity {

@@ -1,11 +1,15 @@
-import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
+import { Controller, Post, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from '../services/auth.service';
-import { User } from 'src/user/model/user.model';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { User } from 'src/user/entities/user.entity';
+import { ApiBody, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { LoginResponseDto } from '../dto/login-response.dto';
 import { LoginDto } from '../dto/login-dto';
+
+// TODO: How to use a injected provider inside a decorator?
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 @ApiTags('auth')
 @Controller('auth')
@@ -14,9 +18,13 @@ export class AuthController {
 
   @Post('login')
   @UseGuards(AuthGuard('local'))
-  @ApiOkResponse({ type: LoginResponseDto })
-  login(@Req() req: Request, @Body() loginDto: LoginDto) {
-    console.log(loginDto);
+  @ApiBody({ type: LoginDto })
+  @ApiOkResponse({
+    type: LoginResponseDto,
+    // TODO: How to use a injected provider inside a decorator?
+    description: `'access_token' only valid for ${process.env.JWT_VALID_DAYS} days`,
+  })
+  login(@Req() req: Request) {
     const user = req.user as User;
     return this.authService.generateJWT(user);
   }

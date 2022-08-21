@@ -1,17 +1,19 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-
-import { User } from 'src/user/model/user.model';
+import config from 'src/config/config';
+import { User } from 'src/user/entities/user.entity';
 import { PayloadToken } from '../models/token.model';
 import { LoginResponseDto } from '../dto/login-response.dto';
 import { UserService } from 'src/user/user.service';
+import { ConfigType } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private userService: UserService,
-    private jwtService: JwtService,
+    private readonly userService: UserService,
+    private readonly jwtService: JwtService,
+    @Inject(config.KEY) private configService: ConfigType<typeof config>,
   ) {}
 
   async validateUser(email: string, password: string) {
@@ -28,7 +30,7 @@ export class AuthService {
   generateJWT(user: User): LoginResponseDto {
     const payload: PayloadToken = { sub: user.id, role: user.role };
     return {
-      access_token: this.jwtService.sign(payload, { notBefore: '7d' }),
+      access_token: this.jwtService.sign(payload),
       user,
     };
   }
