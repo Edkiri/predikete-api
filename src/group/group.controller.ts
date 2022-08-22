@@ -109,6 +109,18 @@ export class GroupController {
     );
   }
 
+  @Post(':groupId/access-request')
+  @ApiOkResponse({ type: () => GroupAccessRequest, status: 204 })
+  @ApiBody({ type: CreateGroupAccessRequestDto, required: false })
+  createGroupAccessRequest(
+    @Param('groupId', ParseIntPipe) groupId: number,
+    @Body() data: CreateGroupAccessRequestDto,
+    @Req() req: Request,
+  ) {
+    const { sub } = req.user as PayloadToken;
+    return this.AccessRequestService.create(+sub, groupId, data);
+  }
+
   @Post('use-invitation/:invitationId')
   @UseGuards(IsInvitedUserGuard)
   @ApiOkResponse({ status: 200 })
@@ -122,18 +134,6 @@ export class GroupController {
     return {
       message: `Invitation successfully ${operation}`,
     };
-  }
-
-  @Post(':groupId/access-request')
-  @ApiOkResponse({ type: () => GroupAccessRequest, status: 204 })
-  @ApiBody({ type: CreateGroupAccessRequestDto, required: false })
-  createGroupAccessRequest(
-    @Param('groupId', ParseIntPipe) groupId: number,
-    @Body() data: CreateGroupAccessRequestDto,
-    @Req() req: Request,
-  ) {
-    const { sub } = req.user as PayloadToken;
-    return this.AccessRequestService.create(+sub, groupId, data);
   }
 
   @Post('use-access-request/:accessRequestId')
