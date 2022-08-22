@@ -69,4 +69,12 @@ export class MembershipService extends TransactionFor<MembershipService> {
       where: { group: { id: group.id }, user: { id: user.id } },
     });
   }
+
+  async findUserAdminMemberships(userId: number): Promise<Membership[] | []> {
+    const adminMemberships = await this.membershipRepository.find({
+      where: { user: { id: userId }, isAdmin: true },
+      relations: { group: true },
+    });
+    return adminMemberships;
+  }
 }

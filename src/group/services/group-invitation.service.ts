@@ -31,6 +31,15 @@ export class GroupInvitationService {
     return invitation;
   }
 
+  async findUserInvitations(
+    issuedToId: number,
+  ): Promise<GroupInvitation[] | []> {
+    const invitations = await this.groupInvitationRepository.find({
+      where: { issuedTo: { id: issuedToId } },
+    });
+    return invitations;
+  }
+
   async createGroupInvitation(
     issuedById: number,
     groupId: number,

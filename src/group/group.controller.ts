@@ -27,7 +27,6 @@ import { uuid } from 'uuidv4';
 import { Group } from './entities/group.entity';
 import { CreateGroupDto } from './dto/create-group.dto';
 import { PayloadToken } from 'src/auth/models/token.model';
-import { GroupService } from './services/group.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 import { MembershipService } from './services/membership.service';
 import { Membership } from './entities/membership.entity';
@@ -40,6 +39,7 @@ import { CreateGroupAccessRequestDto } from './dto/create-group-access-request.d
 import { GroupAccessRequestService } from './services/group-access-request.service';
 import { IsGroupAdminGuard } from './guards/is-group-admin.guard';
 import { IsInvitedUserGuard } from './guards/is-invitation-owner.guard';
+import { GroupNotificationsDto } from './dto/group-notification.dto';
 
 // TODO: Must work with amazon s3 on production
 const storage = {
@@ -60,9 +60,8 @@ const storage = {
 @UseGuards(JwtAuthGuard)
 export class GroupController {
   constructor(
-    private readonly groupService: GroupService,
     private readonly membershipService: MembershipService,
-    private readonly groupInvitationService: GroupInvitationService,
+    private readonly invitationService: GroupInvitationService,
     private readonly AccessRequestService: GroupAccessRequestService,
     private readonly dataSource: DataSource,
   ) {}
@@ -102,11 +101,7 @@ export class GroupController {
     @Req() req: Request,
   ) {
     const { sub } = req.user as PayloadToken;
-    return this.groupInvitationService.createGroupInvitation(
-      +sub,
-      +groupId,
-      data,
-    );
+    return this.invitationService.createGroupInvitation(+sub, +groupId, data);
   }
 
   @Post(':groupId/access-request')
@@ -129,7 +124,7 @@ export class GroupController {
     @Param('invitationId', ParseIntPipe) invitationId: number,
     @Body() data: AcceptOrRejectDto,
   ) {
-    await this.groupInvitationService.useInvitation(+invitationId, data);
+    await this.invitationService.useInvitation(+invitationId, data);
     const operation = data.accept ? 'accepted' : 'rejected';
     return {
       message: `Invitation successfully ${operation}`,
@@ -145,5 +140,16 @@ export class GroupController {
     @Body() data: AcceptOrRejectDto,
   ) {
     await this.AccessRequestService.useAccessRequest(+accessRequestId, data);
+  }
+
+  @Get('notifications')
+  @ApiOkResponse({ type: () => GroupNotificationsDto })
+  async getGroupNotifications(@Req() req: Request) {
+    const { sub } = req.user as PayloadToken;
+    const invitations = await this.invitationService.findUserInvitations(+sub);
+    const accessRequest = await this.AccessRequestService.findUserAccessRequest(
+      +sub,
+    );
+    return { invitations, accessRequest };
   }
 }
