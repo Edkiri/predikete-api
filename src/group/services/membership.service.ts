@@ -6,10 +6,10 @@ import { isDefined, isNotDefined } from 'src/tools';
 import { User } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
 import { Repository } from 'typeorm';
-import { CreateGroupDto } from './dto/create-group.dto';
+import { CreateGroupDto } from '../dto/create-group.dto';
 import { GroupService } from './group.service';
-import { Group } from './entities/group.entity';
-import { Membership } from './entities/membership.entity';
+import { Group } from '../entities/group.entity';
+import { Membership } from '../entities/membership.entity';
 
 @Injectable()
 export class MembershipService extends TransactionFor<MembershipService> {
@@ -29,16 +29,16 @@ export class MembershipService extends TransactionFor<MembershipService> {
   ): Promise<Group> {
     const user = await this.userService.findUserById(userId);
     const group = await this.groupService.create(groupData);
-    const membership = await this.createAdminMembership(user, group);
+    const membership = await this.create(user, group, true);
     if (isNotDefined(membership)) {
-      throw new HttpException('Error during membership creation.', 400);
+      throw new HttpException('Error during membership creation.', 500);
     }
     return group;
   }
 
-  async createAdminMembership(user: User, group: Group) {
+  async create(user: User, group: Group, isAdmin = false) {
     const membership = await this.membershipRepository.findOne({
-      where: { user, group },
+      where: { user: { id: user.id }, group: { id: group.id } },
     });
     if (isDefined(membership)) {
       throw new HttpException('User already belongs to this group.', 400);
@@ -46,11 +46,11 @@ export class MembershipService extends TransactionFor<MembershipService> {
     return this.membershipRepository.save({
       group: group,
       user: user,
-      isAdmin: true,
+      isAdmin,
     });
   }
 
-  async findMembersByGroupId(groupId: number) {
+  async findGroupMembers(groupId: number) {
     const group = await this.groupService.findOne(groupId);
     const memberships = await this.membershipRepository.find({
       where: { group: { id: group.id } },
@@ -62,5 +62,11 @@ export class MembershipService extends TransactionFor<MembershipService> {
       );
     }
     return memberships;
+  }
+
+  async findMember(group: Group, user: User): Promise<Membership | null> {
+    return this.membershipRepository.findOne({
+      where: { group: { id: group.id }, user: { id: user.id } },
+    });
   }
 }

@@ -2,8 +2,8 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { isNotDefined } from 'src/tools';
 import { Repository } from 'typeorm';
-import { CreateGroupDto } from './dto/create-group.dto';
-import { Group } from './entities/group.entity';
+import { CreateGroupDto } from '../dto/create-group.dto';
+import { Group } from '../entities/group.entity';
 
 @Injectable()
 export class GroupService {
@@ -20,10 +20,10 @@ export class GroupService {
       throw new HttpException('Name already in used', 400);
     }
     const newGroup = await this.groupRepository.save(data);
-    return newGroup;
+    return this.groupRepository.findOneOrFail({ where: { id: newGroup.id } });
   }
 
-  async findOne(id: number) {
+  async findOne(id: number): Promise<Group> {
     const group = await this.groupRepository.findOne({ where: { id } });
     if (isNotDefined(group)) {
       throw new HttpException(`Not found group with id '${id}'`, 404);

@@ -6,6 +6,7 @@ import { Profile } from './profile.entity';
 import { Role } from './role.enum';
 import { ApiProperty } from '@nestjs/swagger';
 import { Membership } from '../../group/entities/membership.entity';
+import { GroupInvitation } from '../../group/entities/group-invitation.entity';
 
 @Entity({ name: 'user' })
 export class User extends BaseEntity {
@@ -42,4 +43,14 @@ export class User extends BaseEntity {
     onDelete: 'CASCADE',
   })
   memberships?: Membership[];
+
+  @Exclude()
+  @OneToMany(
+    () => GroupInvitation,
+    (groupInvitation) => groupInvitation.issuedTo,
+    {
+      onDelete: 'CASCADE',
+    },
+  )
+  groupInvitations?: GroupInvitation[];
 }
