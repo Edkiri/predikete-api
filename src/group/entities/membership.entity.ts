@@ -11,7 +11,6 @@ import {
   RelationId,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
-import { ApiProperty } from '@nestjs/swagger';
 
 @Entity({ name: 'group_membership' })
 export class Membership extends BaseEntity {
@@ -21,17 +20,18 @@ export class Membership extends BaseEntity {
   @ManyToOne(() => User, (user) => user.memberships, {
     eager: true,
   })
+  @Index()
   @JoinColumn({ name: 'user_id' })
   user!: User;
 
   @Exclude()
-  @ManyToOne(() => Group, (group) => group.memberships)
+  @ManyToOne(() => Group, (group) => group.memberships, { eager: true })
   @Index()
   @JoinColumn({ name: 'group_id' })
   group!: Group;
 
   @RelationId((membership: Membership) => membership.group)
-  @ApiProperty()
+  @ApiModelProperty()
   groupId!: number;
 
   @ApiModelProperty()

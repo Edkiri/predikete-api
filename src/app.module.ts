@@ -6,6 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { GroupModule } from './group/group.module';
 import { UserModule } from './user/user.module';
 import { TournamentModule } from './tournament/tournament.module';
+import { SeederModule } from './seeder/seeder.module';
 import config from './config/config';
 import configSchema from './config/config.schema';
 
@@ -22,6 +23,7 @@ import configSchema from './config/config.schema';
     GroupModule,
     UserModule,
     TournamentModule,
+    SeederModule,
   ],
   providers: [],
   controllers: [],

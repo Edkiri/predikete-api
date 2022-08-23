@@ -21,9 +21,6 @@ export class GroupInvitationService {
   async findOne(id: number): Promise<GroupInvitation> {
     const invitation = await this.groupInvitationRepository.findOne({
       where: { id },
-      relations: {
-        group: true,
-      },
     });
     if (!invitation) {
       throw new HttpException(`Not found invitation with id '${id}.'`, 404);

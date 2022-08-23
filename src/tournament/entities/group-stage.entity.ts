@@ -1,13 +1,5 @@
 import { BaseEntity } from '../../database/entities/base.entity-abstract';
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  JoinTable,
-  ManyToMany,
-  ManyToOne,
-  OneToMany,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 // import { Match } from './match.entity';
 import { Team } from './team.entity';
 import { Tournament } from './tournaments.entity';
@@ -33,15 +25,6 @@ export class GroupStage extends BaseEntity {
   matches?: Match[];
 
   @Exclude()
-  @ManyToMany(() => Team)
-  @JoinTable({
-    name: 'tournament_group_stage_team',
-    joinColumn: {
-      name: 'group_stage_id',
-    },
-    inverseJoinColumn: {
-      name: 'team_id',
-    },
-  })
+  @OneToMany(() => Team, (team) => team.groupStage)
   teams?: Team[];
 }

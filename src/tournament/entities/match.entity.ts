@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { GroupStage } from './group-stage.entity';
 // import { Phase } from './phase.entity';
@@ -8,21 +8,30 @@ import {
   ApiModelProperty,
   ApiModelPropertyOptional,
 } from '@nestjs/swagger/dist/decorators/api-model-property.decorator';
-import { Phase } from './phase.entity';
+import { PhaseOptions } from '../interfaces/phase.enum';
 
 @Entity('tournament_match')
 export class Match extends MatchBaseModel {
-  @ApiModelProperty()
+  @Exclude()
   @ManyToOne(() => Tournament)
   @JoinColumn({ name: 'tournament_id' })
   tournament!: Tournament;
 
-  @ApiModelPropertyOptional()
-  @ManyToOne(() => Phase, (phase) => phase.matches, { nullable: true })
-  @JoinColumn({ name: 'phase_id' })
-  phase?: Phase;
+  @ApiModelPropertyOptional({
+    enum: [PhaseOptions],
+    enumName: 'PhaseOptions',
+    default: PhaseOptions.GROUP_STAGE,
+  })
+  @Column({
+    type: 'enum',
+    enum: PhaseOptions,
+    enumName: 'PhaseOptions',
+    default: PhaseOptions.GROUP_STAGE,
+  })
+  @Index()
+  phase?: PhaseOptions;
 
-  @ApiModelPropertyOptional()
+  @Exclude()
   @ManyToOne(() => GroupStage, (groupStage) => groupStage.matches, {
     nullable: true,
   })

@@ -10,12 +10,12 @@ export abstract class MatchBaseModel extends BaseEntity {
   @ApiModelProperty({ type: () => Team })
   @ManyToOne(() => Team, { nullable: true, eager: true })
   @JoinColumn({ name: 'local_team_id' })
-  local!: Team;
+  local?: Team;
 
   @ApiModelProperty({ type: () => Team })
   @ManyToOne(() => Team, { nullable: true, eager: true })
   @JoinColumn({ name: 'visit_team_id' })
-  visit!: Team;
+  visit?: Team;
 
   @ApiModelPropertyOptional()
   @Column({ type: 'int', name: 'goals_local', nullable: true })

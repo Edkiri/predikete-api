@@ -6,6 +6,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
 import { Profile } from './entities/profile.entity';
+import { Role } from './entities/role.enum';
 
 @Injectable()
 export class UserService {
@@ -16,12 +17,8 @@ export class UserService {
     private readonly profileRepository: Repository<Profile>,
   ) {}
 
-  async findByEmail(email: string): Promise<User> {
-    const user = await this.userRepository.findOne({ where: { email } });
-    if (isNotDefined(user)) {
-      throw new HttpException('Not found user with this email', 404);
-    }
-    return user;
+  async findOneByEmail(email: string): Promise<User | null> {
+    return this.userRepository.findOne({ where: { email } });
   }
 
   async findOne(userId: number): Promise<User> {
@@ -34,7 +31,7 @@ export class UserService {
     return user;
   }
 
-  async create(data: CreateUserDto) {
+  async create(data: CreateUserDto, role = Role.CLIENT) {
     const oldEmailUser = await this.userRepository.findOne({
       where: { email: data.email },
     });
@@ -49,6 +46,7 @@ export class UserService {
     newUser.password = hashPassword;
     const profile = await this.profileRepository.save({});
     newUser.profile = profile;
+    newUser.role = role;
     const user = await this.userRepository.save(newUser);
     return this.userRepository.findOneOrFail({ where: { id: user.id } });
   }
