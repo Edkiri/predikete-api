@@ -13,7 +13,7 @@ import {
 import { Exclude } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
-@Entity({ name: 'membership' })
+@Entity({ name: 'group_membership' })
 export class Membership extends BaseEntity {
   @ApiModelProperty({
     type: () => User,

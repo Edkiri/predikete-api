@@ -45,7 +45,7 @@ export class GroupAccessRequestService {
     groupId: number,
     data: CreateGroupAccessRequestDto,
   ): Promise<GroupAccessRequest> {
-    const issuedBy = await this.userService.findUserById(issuedById);
+    const issuedBy = await this.userService.findOne(issuedById);
     const group = await this.groupService.findOne(groupId);
     const oldMember = await this.membershipService.findMember(group, issuedBy);
     if (oldMember)

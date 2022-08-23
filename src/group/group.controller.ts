@@ -54,7 +54,6 @@ const storage = {
   }),
 };
 
-@ApiTags('group')
 @ApiBearerAuth()
 @Controller('group')
 @UseGuards(JwtAuthGuard)
@@ -66,6 +65,7 @@ export class GroupController {
     private readonly dataSource: DataSource,
   ) {}
 
+  @ApiTags('group')
   @Post()
   @ApiOkResponse({ type: Group })
   @UseInterceptors(FileInterceptor('picture', storage))
@@ -84,12 +84,14 @@ export class GroupController {
     });
   }
 
+  @ApiTags('group')
   @Get(':groupId/members')
   @ApiOkResponse({ type: Membership, isArray: true })
   getGroupMembers(@Param('groupId', ParseIntPipe) groupId: number) {
     return this.membershipService.findGroupMembers(+groupId);
   }
 
+  @ApiTags('group invite operations')
   @Post(':groupId/invite-user')
   @UseGuards(IsGroupAdminGuard)
   @HttpCode(201)
@@ -104,6 +106,7 @@ export class GroupController {
     return this.invitationService.createGroupInvitation(+sub, +groupId, data);
   }
 
+  @ApiTags('group access_request operations')
   @Post(':groupId/access-request')
   @ApiOkResponse({ type: () => GroupAccessRequest, status: 204 })
   @ApiBody({ type: CreateGroupAccessRequestDto, required: false })
@@ -116,6 +119,7 @@ export class GroupController {
     return this.AccessRequestService.create(+sub, groupId, data);
   }
 
+  @ApiTags('group invite operations')
   @Post('use-invitation/:invitationId')
   @UseGuards(IsInvitedUserGuard)
   @ApiOkResponse({ status: 200 })
@@ -131,6 +135,7 @@ export class GroupController {
     };
   }
 
+  @ApiTags('group access_request operations')
   @Post('use-access-request/:accessRequestId')
   @UseGuards(IsGroupAdminGuard)
   @ApiOkResponse({ status: 200 })
@@ -142,6 +147,7 @@ export class GroupController {
     await this.AccessRequestService.useAccessRequest(+accessRequestId, data);
   }
 
+  @ApiTags('group')
   @Get('notifications')
   @ApiOkResponse({ type: () => GroupNotificationsDto })
   async getGroupNotifications(@Req() req: Request) {

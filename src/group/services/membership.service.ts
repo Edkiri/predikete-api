@@ -27,7 +27,7 @@ export class MembershipService extends TransactionFor<MembershipService> {
     groupData: CreateGroupDto,
     userId: number,
   ): Promise<Group> {
-    const user = await this.userService.findUserById(userId);
+    const user = await this.userService.findOne(userId);
     const group = await this.groupService.create(groupData);
     const membership = await this.create(user, group, true);
     if (isNotDefined(membership)) {

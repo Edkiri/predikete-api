@@ -5,6 +5,7 @@ import { environments } from './environments';
 import { AuthModule } from './auth/auth.module';
 import { GroupModule } from './group/group.module';
 import { UserModule } from './user/user.module';
+import { TournamentModule } from './tournament/tournament.module';
 import config from './config/config';
 import configSchema from './config/config.schema';
 
@@ -20,6 +21,7 @@ import configSchema from './config/config.schema';
     AuthModule,
     GroupModule,
     UserModule,
+    TournamentModule,
   ],
   providers: [],
   controllers: [],

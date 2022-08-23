@@ -46,7 +46,7 @@ export class GroupInvitationService {
     payload: CreateGroupInvitationDto,
   ): Promise<GroupInvitation> {
     const { sentToUserId, message } = payload;
-    const issuedTo = await this.userService.findUserById(sentToUserId);
+    const issuedTo = await this.userService.findOne(sentToUserId);
     const group = await this.groupService.findOne(groupId);
     const oldMember = await this.membershipService.findMember(group, issuedTo);
     if (oldMember)
@@ -67,7 +67,7 @@ export class GroupInvitationService {
         400,
       );
     }
-    const issuedBy = await this.userService.findUserById(issuedById);
+    const issuedBy = await this.userService.findOne(issuedById);
     const invitation = await this.groupInvitationRepository.save({
       issuedBy,
       issuedTo,

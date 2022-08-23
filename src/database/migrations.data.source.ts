@@ -10,7 +10,7 @@ const Config: DataSourceOptions = {
   url: process.env.DATABASE_URL,
   entities: [__dirname + '/../**/*.entity.ts'],
   migrations: [__dirname + '/migrations/*{.ts,.js}'],
-  migrationsTableName: 'migrations',
+  migrationsTableName: 'migration',
   synchronize: false,
   logging: false,
   ssl:

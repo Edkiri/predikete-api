@@ -19,7 +19,7 @@ export class IsInvitedUserGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const payload = request.user as PayloadToken;
     try {
-      const user = await this.userService.findUserById(payload.sub);
+      const user = await this.userService.findOne(payload.sub);
       const invitation = await this.invitationService.findOne(
         request.params.invitationId,
       );

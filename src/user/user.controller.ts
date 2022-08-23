@@ -25,6 +25,6 @@ export class UserController {
   @Get(':userId')
   @ApiResponse({ type: User })
   getUserById(@Param('userId', ParseIntPipe) userId: number) {
-    return this.userService.findUserById(+userId);
+    return this.userService.findOne(+userId);
   }
 }

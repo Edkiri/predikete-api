@@ -22,6 +22,7 @@ export class User extends BaseEntity {
   @Column({ type: 'varchar', length: 255 })
   password!: string;
 
+  @Exclude()
   @ApiProperty({ enum: Role, enumName: 'Role', default: Role.CLIENT })
   @Column({
     type: 'enum',

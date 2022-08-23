@@ -24,8 +24,10 @@ export class UserService {
     return user;
   }
 
-  async findUserById(userId: number): Promise<User> {
-    const user = await this.userRepository.findOne({ where: { id: userId } });
+  async findOne(userId: number): Promise<User> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+    });
     if (isNotDefined(user)) {
       throw new HttpException(`Not found user with id "${userId}"`, 404);
     }
