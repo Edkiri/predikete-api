@@ -6,10 +6,10 @@ import { isDefined, isNotDefined } from 'src/tools';
 import { User } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
 import { Repository } from 'typeorm';
-import { CreateGroupDto } from '../dto/create-group.dto';
-import { GroupService } from './group.service';
-import { Group } from '../entities/group.entity';
-import { Membership } from '../entities/membership.entity';
+import { CreateGroupDto } from './dto/create-group.dto';
+import { GroupService } from 'src/group/services/group.service';
+import { Group } from '../group/entities/group.entity';
+import { Membership } from './entities/membership.entity';
 
 @Injectable()
 export class MembershipService extends TransactionFor<MembershipService> {

@@ -1,6 +1,6 @@
 import { ApiModelProperty } from '@nestjs/swagger/dist/decorators/api-model-property.decorator';
 import { BaseEntity } from '../../database/entities/base.entity-abstract';
-import { Group } from './group.entity';
+import { Group } from '../../group/entities/group.entity';
 import { User } from '../../user/entities/user.entity';
 import {
   Column,

@@ -5,8 +5,8 @@ import { ApiModelPropertyOptional } from '@nestjs/swagger/dist/decorators/api-mo
 import { Profile } from './profile.entity';
 import { Role } from './role.enum';
 import { ApiProperty } from '@nestjs/swagger';
-import { Membership } from '../../group/entities/membership.entity';
-import { GroupInvitation } from '../../group/entities/group-invitation.entity';
+import { Membership } from '../../membership/entities/membership.entity';
+import { GroupInvitation } from '../../membership/entities/group-invitation.entity';
 
 @Entity({ name: 'user' })
 export class User extends BaseEntity {

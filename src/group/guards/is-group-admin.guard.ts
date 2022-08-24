@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { PayloadToken } from 'src/auth/models/token.model';
 import { UserService } from 'src/user/user.service';
-import { MembershipService } from '../services/membership.service';
+import { MembershipService } from 'src/membership/membership.service';
 
 @Injectable()
 export class IsGroupAdminGuard implements CanActivate {

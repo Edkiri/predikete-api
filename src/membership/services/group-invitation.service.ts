@@ -2,11 +2,11 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserService } from 'src/user/user.service';
 import { Repository } from 'typeorm';
-import { GroupService } from './group.service';
-import { MembershipService } from './membership.service';
-import { CreateGroupInvitationDto } from '../dto/create-invitation.dto';
+import { GroupService } from '../../group/services/group.service';
+import { MembershipService } from '../membership.service';
+import { CreateGroupInvitationDto } from 'src/group/dto/create-invitation.dto';
 import { GroupInvitation } from '../entities/group-invitation.entity';
-import { AcceptOrRejectDto } from '../dto/accept-or-reject.dto';
+import { AcceptOrRejectDto } from '../../group/dto/accept-or-reject.dto';
 
 @Injectable()
 export class GroupInvitationService {

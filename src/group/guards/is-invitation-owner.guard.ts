@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { PayloadToken } from 'src/auth/models/token.model';
 import { UserService } from 'src/user/user.service';
-import { GroupInvitationService } from '../services/group-invitation.service';
+import { GroupInvitationService } from '../../membership/services/group-invitation.service';
 
 @Injectable()
 export class IsInvitedUserGuard implements CanActivate {

@@ -4,8 +4,9 @@ import {
   ApiModelProperty,
   ApiModelPropertyOptional,
 } from '@nestjs/swagger/dist/decorators/api-model-property.decorator';
-import { Membership } from './membership.entity';
+import { Membership } from '../../membership/entities/membership.entity';
 import { Exclude } from 'class-transformer';
+import { Pool } from '../../pool/entities/pool.entity';
 
 @Entity({ name: 'group' })
 export class Group extends BaseEntity {
@@ -20,6 +21,10 @@ export class Group extends BaseEntity {
   @Exclude()
   @OneToMany(() => Membership, (membership) => membership.group)
   memberships!: Membership[];
+
+  @Exclude()
+  @OneToMany(() => Pool, (pool) => pool.group, { nullable: true })
+  pools?: Pool[];
 
   @ApiModelPropertyOptional()
   @Column({ type: 'varchar', length: 255, nullable: true })
