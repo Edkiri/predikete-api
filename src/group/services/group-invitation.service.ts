@@ -3,27 +3,38 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UserService } from 'src/user/user.service';
 import { Repository } from 'typeorm';
 import { GroupService } from '../../group/services/group.service';
-import { MembershipService } from '../membership.service';
+import { MembershipService } from './membership.service';
 import { CreateGroupInvitationDto } from 'src/group/dto/create-invitation.dto';
 import { GroupInvitation } from '../entities/group-invitation.entity';
 import { AcceptOrRejectDto } from '../../group/dto/accept-or-reject.dto';
+import { TransactionFor } from 'nest-transact';
+import { ModuleRef } from '@nestjs/core';
+import { Membership } from '../entities';
+import { PoolService } from 'src/pool/services/pool.service';
 
 @Injectable()
-export class GroupInvitationService {
+export class GroupInvitationService extends TransactionFor<GroupInvitationService> {
   constructor(
     @InjectRepository(GroupInvitation)
     private readonly groupInvitationRepository: Repository<GroupInvitation>,
     private readonly userService: UserService,
     private readonly groupService: GroupService,
     private readonly membershipService: MembershipService,
-  ) {}
+    private readonly poolService: PoolService,
+    moduleRef: ModuleRef,
+  ) {
+    super(moduleRef);
+  }
 
-  async findOne(id: number): Promise<GroupInvitation> {
+  async findOne(invitationId: number): Promise<GroupInvitation> {
     const invitation = await this.groupInvitationRepository.findOne({
-      where: { id },
+      where: { id: invitationId },
     });
     if (!invitation) {
-      throw new HttpException(`Not found invitation with id '${id}.'`, 404);
+      throw new HttpException(
+        `Not found invitation with id '${invitationId}.'`,
+        404,
+      );
     }
     return invitation;
   }
@@ -43,9 +54,10 @@ export class GroupInvitationService {
     payload: CreateGroupInvitationDto,
   ): Promise<GroupInvitation> {
     const { sentToUserId, message } = payload;
-    const issuedTo = await this.userService.findOne(sentToUserId);
-    const group = await this.groupService.findOne(groupId);
-    const oldMember = await this.membershipService.findMember(group, issuedTo);
+    const oldMember = await this.membershipService.findMember(
+      groupId,
+      sentToUserId,
+    );
     if (oldMember)
       throw new HttpException(
         `User with id '${sentToUserId}' is already member.`,
@@ -53,24 +65,27 @@ export class GroupInvitationService {
       );
     const oldInvitation = await this.groupInvitationRepository.findOne({
       where: {
-        group: { id: group.id },
-        issuedTo: { id: issuedTo.id },
+        group: { id: groupId },
+        issuedTo: { id: sentToUserId },
         issuedBy: { id: issuedById },
       },
     });
     if (oldInvitation) {
       throw new HttpException(
-        `Invitation already sent to user with id '${issuedTo.id}'.`,
+        `Invitation already sent to user with id '${sentToUserId}'.`,
         400,
       );
     }
     const issuedBy = await this.userService.findOne(issuedById);
+    const issuedTo = await this.userService.findOne(sentToUserId);
+    const group = await this.groupService.findOne(groupId);
     const invitation = await this.groupInvitationRepository.save({
       issuedBy,
       issuedTo,
       group,
       message,
     });
+
     return this.groupInvitationRepository.findOneOrFail({
       where: { id: invitation.id },
     });
@@ -79,13 +94,18 @@ export class GroupInvitationService {
   async useInvitation(
     invitationId: number,
     operation: AcceptOrRejectDto,
-  ): Promise<void> {
+  ): Promise<Membership | undefined> {
     const invitation = await this.findOne(invitationId);
+
     if (operation.accept) {
-      await this.membershipService.create(
-        invitation.issuedTo,
-        invitation.group,
+      const membership = await this.membershipService.create(
+        invitation.issuedTo.id,
+        invitation.group.id,
       );
+      await this.poolService.create({
+        owner: invitation.issuedTo,
+        group: invitation.group,
+      });
       const invitationsToDelete = await this.groupInvitationRepository.find({
         where: {
           group: { id: invitation.group.id },
@@ -95,7 +115,7 @@ export class GroupInvitationService {
       invitationsToDelete.map(async (invitation) => {
         await this.groupInvitationRepository.delete(invitation.id);
       });
-      return;
+      return membership;
     }
     await this.groupInvitationRepository.delete(invitation.id);
     return;

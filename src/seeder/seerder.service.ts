@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import config from 'src/config/config';
-import { TournamentService } from 'src/tournament/tournament.service';
+import { TournamentService } from 'src/tournament/services';
 import { Role } from 'src/user/entities/role.enum';
 import { UserService } from 'src/user/user.service';
 import { DataSource } from 'typeorm';

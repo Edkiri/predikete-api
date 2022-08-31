@@ -24,22 +24,28 @@ import { Request } from 'express';
 import { diskStorage } from 'multer';
 import { uuid } from 'uuidv4';
 
-import { Group } from './entities/group.entity';
-import { CreateGroupDto } from './dto/create-group.dto';
 import { PayloadToken } from 'src/auth/models/token.model';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
-import { MembershipService } from 'src/membership/membership.service';
-import { Membership } from '../membership/entities/membership.entity';
-import { GroupInvitationService } from '../membership/services/group-invitation.service';
-import { GroupInvitation } from 'src/membership/entities/group-invitation.entity';
-import { CreateGroupInvitationDto } from './dto/create-invitation.dto';
-import { AcceptOrRejectDto } from './dto/accept-or-reject.dto';
-import { GroupAccessRequest } from 'src/membership/entities/group-access-request.entity';
-import { CreateGroupAccessRequestDto } from './dto/create-group-access-request.dto';
-import { GroupAccessRequestService } from 'src/membership/services/group-access-request.service';
-import { IsGroupAdminGuard } from './guards/is-group-admin.guard';
-import { IsInvitedUserGuard } from './guards/is-invitation-owner.guard';
-import { GroupNotificationsDto } from './dto/group-notification.dto';
+
+import {
+  GroupAccessRequestService,
+  GroupInvitationService,
+  MembershipService,
+} from './services';
+import {
+  AcceptOrRejectDto,
+  CreateGroupAccessRequestDto,
+  CreateGroupDto,
+  CreateGroupInvitationDto,
+  GroupNotificationsDto,
+} from './dto';
+import {
+  Group,
+  GroupAccessRequest,
+  GroupInvitation,
+  Membership,
+} from './entities';
+import { IsGroupAdminGuard, IsInvitedUserGuard } from './guards';
 
 // TODO: Must work with amazon s3 on production
 const storage = {
@@ -80,7 +86,7 @@ export class GroupController {
     return this.dataSource.transaction((manager) => {
       return this.membershipService
         .withTransaction(manager)
-        .createGroupAndMembership(data, sub);
+        .createGroupMembershipAndPool(data, sub);
     });
   }
 
@@ -128,23 +134,36 @@ export class GroupController {
     @Param('invitationId', ParseIntPipe) invitationId: number,
     @Body() data: AcceptOrRejectDto,
   ) {
-    await this.invitationService.useInvitation(+invitationId, data);
-    const operation = data.accept ? 'accepted' : 'rejected';
+    const membership = await this.dataSource.transaction((manager) => {
+      return this.invitationService
+        .withTransaction(manager)
+        .useInvitation(+invitationId, data);
+    });
+    if (membership) return membership;
     return {
-      message: `Invitation successfully ${operation}`,
+      message: 'Invitation have been rejected.',
     };
   }
 
   @ApiTags('group access_request operations')
-  @Post('use-access-request/:accessRequestId')
+  @Post(':groupId/use-access-request/:accessRequestId')
   @UseGuards(IsGroupAdminGuard)
   @ApiOkResponse({ status: 200 })
   @HttpCode(200)
   async useGroupAccessRequest(
     @Param('accessRequestId') accessRequestId: number,
+    @Param('groupId') groupId: number,
     @Body() data: AcceptOrRejectDto,
   ) {
-    await this.AccessRequestService.useAccessRequest(+accessRequestId, data);
+    const membership = await this.dataSource.transaction((manager) => {
+      return this.AccessRequestService.withTransaction(
+        manager,
+      ).useAccessRequest(+accessRequestId, data);
+    });
+    if (membership) return membership;
+    return {
+      message: 'Access Request have been rejected.',
+    };
   }
 
   @ApiTags('group')
@@ -153,9 +172,8 @@ export class GroupController {
   async getGroupNotifications(@Req() req: Request) {
     const { sub } = req.user as PayloadToken;
     const invitations = await this.invitationService.findUserInvitations(+sub);
-    const accessRequest = await this.AccessRequestService.findUserAccessRequest(
-      +sub,
-    );
-    return { invitations, accessRequest };
+    const accessRequests =
+      await this.AccessRequestService.findUserAccessRequest(+sub);
+    return { invitations, accessRequests };
   }
 }

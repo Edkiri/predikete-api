@@ -1,16 +1,17 @@
 import { Module } from '@nestjs/common';
-import { DatabaseModule } from './database/database.module';
 import { ConfigModule } from '@nestjs/config';
+
 import { environments } from './environments';
+import config from './config/config';
+import configSchema from './config/config.schema';
+
+import { DatabaseModule } from './database/database.module';
 import { AuthModule } from './auth/auth.module';
 import { GroupModule } from './group/group.module';
 import { UserModule } from './user/user.module';
 import { TournamentModule } from './tournament/tournament.module';
 import { SeederModule } from './seeder/seeder.module';
 import { PoolModule } from './pool/pool.module';
-import { MembershipModule } from './membership/membership.module';
-import config from './config/config';
-import configSchema from './config/config.schema';
 
 @Module({
   imports: [
@@ -27,7 +28,6 @@ import configSchema from './config/config.schema';
     TournamentModule,
     SeederModule,
     PoolModule,
-    MembershipModule,
   ],
   providers: [],
   controllers: [],

@@ -38,4 +38,16 @@ export class MatchService {
     });
     return Promise.all(matchesPromises);
   }
+
+  async findByTournament(tournament: Tournament) {
+    const matches = await this.matchRepository.find({
+      where: { tournament: { id: tournament.id } },
+    });
+    if (!matches.length) {
+      throw new Error(
+        `No match found by tournament with id '${tournament.id}'`,
+      );
+    }
+    return matches;
+  }
 }

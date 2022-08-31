@@ -3,21 +3,28 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UserService } from 'src/user/user.service';
 import { In, Repository } from 'typeorm';
 import { AcceptOrRejectDto } from 'src/group/dto/accept-or-reject.dto';
-import { CreateGroupAccessRequestDto } from '../../group/dto/create-group-access-request.dto';
+import { CreateGroupAccessRequestDto } from '../dto/create-group-access-request.dto';
 import { GroupAccessRequest } from '../entities/group-access-request.entity';
-import { Membership } from '../../membership/entities/membership.entity';
+import { Membership } from '../entities/membership.entity';
 import { GroupService } from 'src/group/services/group.service';
-import { MembershipService } from '../membership.service';
+import { MembershipService } from './membership.service';
+import { TransactionFor } from 'nest-transact';
+import { ModuleRef } from '@nestjs/core';
+import { PoolService } from 'src/pool/services/pool.service';
 
 @Injectable()
-export class GroupAccessRequestService {
+export class GroupAccessRequestService extends TransactionFor<GroupAccessRequestService> {
   constructor(
     @InjectRepository(GroupAccessRequest)
     private readonly AccessRequestRepository: Repository<GroupAccessRequest>,
     private readonly userService: UserService,
     private readonly groupService: GroupService,
     private readonly membershipService: MembershipService,
-  ) {}
+    private readonly poolService: PoolService,
+    moduleRef: ModuleRef,
+  ) {
+    super(moduleRef);
+  }
 
   async findUserAccessRequest(
     userId: number,
@@ -45,9 +52,10 @@ export class GroupAccessRequestService {
     groupId: number,
     data: CreateGroupAccessRequestDto,
   ): Promise<GroupAccessRequest> {
-    const issuedBy = await this.userService.findOne(issuedById);
-    const group = await this.groupService.findOne(groupId);
-    const oldMember = await this.membershipService.findMember(group, issuedBy);
+    const oldMember = await this.membershipService.findMember(
+      groupId,
+      issuedById,
+    );
     if (oldMember)
       throw new HttpException(
         `User with id '${issuedById}' is already member`,
@@ -61,6 +69,8 @@ export class GroupAccessRequestService {
         `User with id '${issuedById} already requested to join the group.'`,
         400,
       );
+    const issuedBy = await this.userService.findOne(issuedById);
+    const group = await this.groupService.findOne(groupId);
     const groupAcessRequest = await this.AccessRequestRepository.save({
       issuedBy,
       group,
@@ -74,17 +84,30 @@ export class GroupAccessRequestService {
   async useAccessRequest(
     accessRequestId: number,
     data: AcceptOrRejectDto,
-  ): Promise<void> {
+  ): Promise<Membership | undefined> {
     const accessRequest = await this.AccessRequestRepository.findOneOrFail({
       where: { id: accessRequestId },
     });
     if (data.accept) {
-      await this.membershipService.create(
-        accessRequest.issuedBy,
-        accessRequest.group,
+      const membership = await this.membershipService.create(
+        accessRequest.issuedBy.id,
+        accessRequest.group.id,
       );
+      await this.poolService.create({
+        owner: accessRequest.issuedBy,
+        group: accessRequest.group,
+      });
+      const accessRequestsToDelete = await this.AccessRequestRepository.find({
+        where: {
+          group: { id: accessRequest.group.id },
+          issuedBy: { id: accessRequest.issuedBy.id },
+        },
+      });
+      accessRequestsToDelete.map(async (accessRequest) => {
+        await this.AccessRequestRepository.delete(accessRequest.id);
+      });
+      return membership;
     }
-    await this.AccessRequestRepository.delete(accessRequest.id);
     return;
   }
 }

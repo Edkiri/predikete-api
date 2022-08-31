@@ -4,7 +4,7 @@ import {
   ApiModelProperty,
   ApiModelPropertyOptional,
 } from '@nestjs/swagger/dist/decorators/api-model-property.decorator';
-import { Membership } from '../../membership/entities/membership.entity';
+import { Membership } from './membership.entity';
 import { Exclude } from 'class-transformer';
 import { Pool } from '../../pool/entities/pool.entity';
 

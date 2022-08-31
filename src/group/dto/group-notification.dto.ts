@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { GroupAccessRequest } from 'src/membership/entities/group-access-request.entity';
-import { GroupInvitation } from 'src/membership/entities/group-invitation.entity';
+import { GroupAccessRequest } from 'src/group/entities/group-access-request.entity';
+import { GroupInvitation } from '../entities/group-invitation.entity';
 
 export class GroupNotificationsDto {
   @ApiProperty({ type: () => GroupInvitation, isArray: true })

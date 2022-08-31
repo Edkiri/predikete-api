@@ -3,51 +3,56 @@ import { ModuleRef } from '@nestjs/core';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TransactionFor } from 'nest-transact';
 import { isDefined, isNotDefined } from 'src/tools';
-import { User } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
 import { Repository } from 'typeorm';
-import { CreateGroupDto } from './dto/create-group.dto';
+import { CreateGroupDto } from 'src/group/dto/create-group.dto';
 import { GroupService } from 'src/group/services/group.service';
-import { Group } from '../group/entities/group.entity';
-import { Membership } from './entities/membership.entity';
+import { Group } from '../entities/group.entity';
+import { Membership } from '../entities/membership.entity';
+import { PoolService } from 'src/pool/services/pool.service';
 
 @Injectable()
 export class MembershipService extends TransactionFor<MembershipService> {
   constructor(
     @InjectRepository(Membership)
     private readonly membershipRepository: Repository<Membership>,
-    private readonly groupService: GroupService,
     private readonly userService: UserService,
+    private readonly groupService: GroupService,
+    private readonly poolService: PoolService,
     moduleRef: ModuleRef,
   ) {
     super(moduleRef);
   }
 
-  async createGroupAndMembership(
+  async createGroupMembershipAndPool(
     groupData: CreateGroupDto,
     userId: number,
   ): Promise<Group> {
-    const user = await this.userService.findOne(userId);
     const group = await this.groupService.create(groupData);
-    const membership = await this.create(user, group, true);
+    const membership = await this.create(userId, group.id, true);
+    const pool = await this.poolService.create({
+      owner: membership.user,
+      group,
+    });
     if (isNotDefined(membership)) {
       throw new HttpException('Error during membership creation.', 500);
+    }
+    if (isNotDefined(pool)) {
+      throw new HttpException('Error during pool creation.', 500);
     }
     return group;
   }
 
-  async create(user: User, group: Group, isAdmin = false) {
+  async create(userId: number, groupId: number, isAdmin = false) {
     const membership = await this.membershipRepository.findOne({
-      where: { user: { id: user.id }, group: { id: group.id } },
+      where: { user: { id: userId }, group: { id: groupId } },
     });
     if (isDefined(membership)) {
       throw new HttpException('User already belongs to this group.', 400);
     }
-    return this.membershipRepository.save({
-      group: group,
-      user: user,
-      isAdmin,
-    });
+    const user = await this.userService.findOne(userId);
+    const group = await this.groupService.findOne(groupId);
+    return this.membershipRepository.save({ group, user, isAdmin });
   }
 
   async findGroupMembers(groupId: number) {
@@ -64,9 +69,14 @@ export class MembershipService extends TransactionFor<MembershipService> {
     return memberships;
   }
 
-  async findMember(group: Group, user: User): Promise<Membership | null> {
+  async findMember(
+    groupId: number,
+    userId: number,
+  ): Promise<Membership | null> {
+    const group = await this.groupService.findOne(groupId);
+    const user = await this.userService.findOne(userId);
     return this.membershipRepository.findOne({
-      where: { group: { id: group.id }, user: { id: user.id } },
+      where: { user: { id: user.id }, group: { id: group.id } },
     });
   }
 

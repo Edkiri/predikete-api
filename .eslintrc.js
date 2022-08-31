@@ -23,6 +23,7 @@ module.exports = {
     '@typescript-eslint/no-explicit-any': 'off',
     'import/no-unresolved': 'off',
     'no-useless-constructor': 'off',
+    '@darraghor/nestjs-typed/api-method-should-specify-api-response': 'warn',
     '@darraghor/nestjs-typed/controllers-should-supply-api-tags': 'off',
   },
 };

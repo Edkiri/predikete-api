@@ -1,7 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { BaseEntity } from '../../database/entities/base.entity-abstract';
 import { User } from '../../user/entities/user.entity';
-import { Group } from '../../group/entities/group.entity';
+import { Group } from './group.entity';
 import {
   ApiModelProperty,
   ApiModelPropertyOptional,

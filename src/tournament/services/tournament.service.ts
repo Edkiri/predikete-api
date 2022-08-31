@@ -3,11 +3,12 @@ import { ModuleRef } from '@nestjs/core';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TransactionFor } from 'nest-transact';
 import { Repository } from 'typeorm';
-import { CreateTournamentDto } from './dto/create-tournament.dto';
-import { Tournament } from './entities/tournaments.entity';
-import { GroupStageService } from './services/group-stage.service';
-import { MatchService } from './services/match.service';
-import { TeamService } from './services/team.service';
+
+import { CreateTournamentDto } from '../dto/create-tournament.dto';
+import { Tournament } from '../entities';
+import { GroupStageService } from './group-stage.service';
+import { TeamService } from './team.service';
+import { MatchService } from './match.service';
 
 @Injectable()
 export class TournamentService extends TransactionFor<TournamentService> {
@@ -20,6 +21,10 @@ export class TournamentService extends TransactionFor<TournamentService> {
     moduleRef: ModuleRef,
   ) {
     super(moduleRef);
+  }
+
+  async findOne(tournamentId: number): Promise<Tournament | null> {
+    return this.tournamentRepository.findOne({ where: { id: tournamentId } });
   }
 
   async create(data: CreateTournamentDto): Promise<Tournament | null> {

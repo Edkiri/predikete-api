@@ -1,14 +1,41 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserModule } from 'src/user/user.module';
+
 import { GroupController } from './group.controller';
-import { GroupService } from './services/group.service';
-import { Group } from './entities/group.entity';
-import { MembershipModule } from 'src/membership/membership.module';
+import {
+  Group,
+  GroupAccessRequest,
+  GroupInvitation,
+  Membership,
+} from './entities';
+import {
+  GroupAccessRequestService,
+  GroupInvitationService,
+  GroupService,
+  MembershipService,
+} from './services';
+
+import { UserModule } from 'src/user/user.module';
+import { PoolModule } from 'src/pool/pool.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Group]), UserModule, MembershipModule],
+  imports: [
+    TypeOrmModule.forFeature([
+      Group,
+      Membership,
+      GroupAccessRequest,
+      GroupInvitation,
+    ]),
+    UserModule,
+    forwardRef(() => PoolModule),
+  ],
   controllers: [GroupController],
-  providers: [GroupService],
+  providers: [
+    GroupService,
+    MembershipService,
+    GroupAccessRequestService,
+    GroupInvitationService,
+  ],
+  exports: [MembershipService],
 })
 export class GroupModule {}
