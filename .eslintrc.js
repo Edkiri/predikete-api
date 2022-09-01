@@ -4,11 +4,14 @@ module.exports = {
     project: './tsconfig.json',
     sourceType: 'module',
   },
-  plugins: ['@typescript-eslint/eslint-plugin', '@darraghor/nestjs-typed'],
+  plugins: [
+    '@typescript-eslint/eslint-plugin', 
+    '@darraghor/nestjs-typed',
+  ],
   extends: [
     'plugin:@typescript-eslint/recommended',
-    'plugin:prettier/recommended',
     'plugin:@darraghor/nestjs-typed/recommended',
+    'plugin:prettier/recommended',
   ],
   root: true,
   env: {
@@ -24,6 +27,6 @@ module.exports = {
     'import/no-unresolved': 'off',
     'no-useless-constructor': 'off',
     '@darraghor/nestjs-typed/api-method-should-specify-api-response': 'warn',
-    '@darraghor/nestjs-typed/controllers-should-supply-api-tags': 'off',
+    '@darraghor/nestjs-typed/controllers-should-supply-api-tags': 'warn',
   },
 };

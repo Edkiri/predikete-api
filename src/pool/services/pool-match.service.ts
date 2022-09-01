@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TransactionFor } from 'nest-transact';
@@ -46,13 +46,32 @@ export class PoolMatchService extends TransactionFor<PoolMatchService> {
     return poolMatches;
   }
 
+  async findOne(poolMatchId: number) {
+    const poolMatch = await this.poolMatchRepository.findOne({
+      where: { id: poolMatchId },
+    });
+    if (!poolMatch) {
+      throw new NotFoundException(
+        `Not found pool match with id '${poolMatchId}'.`,
+      );
+    }
+    return poolMatch;
+  }
+
   async findPoolMatches(pool: Pool) {
     return this.poolMatchRepository.find({
       where: { pool: { id: pool.id } },
     });
   }
 
-  async updateMany(data: UpdatePoolMatchesDto) {
+  async updateAllPoolMatches(poolId: number, data: UpdatePoolMatchesDto) {
     const { poolMatches: newPoolMatches } = data;
+    const poolMatchesPromises = newPoolMatches.map((poolMatch) => {
+      return this.updatePoolMatch(poolId, poolMatch);
+    });
+  }
+
+  async updatePoolMatch(poolId: number, changes: PoolMatch //Interface or dto?) {
+    const poolMatch = await this.findOne(changes.id);
   }
 }

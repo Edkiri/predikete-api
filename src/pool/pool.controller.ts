@@ -53,9 +53,14 @@ export class PoolController {
   @UseGuards(IsPoolOwnerGuard)
   @Put(':poolId/update-pool-matches')
   @ApiOkResponse({ status: 204 })
-  async updatePoolMatches(@Body() data: UpdatePoolMatchesDto) {
+  async updatePoolMatches(
+    @Param('poolId', ParseIntPipe) poolId: number,
+    @Body() data: UpdatePoolMatchesDto,
+  ) {
     const membership = await this.dataSource.transaction((manager) => {
-      return this.poolMatchService.withTransaction(manager).updatePoolMatches(data);
+      return this.poolMatchService
+        .withTransaction(manager)
+        .updateAllPoolMatches(poolId, data);
     });
   }
 }
