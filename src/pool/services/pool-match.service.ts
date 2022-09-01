@@ -1,11 +1,17 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TransactionFor } from 'nest-transact';
 import { Match } from 'src/tournament/entities/match.entity';
+import { TeamService } from 'src/tournament/services';
 import { MatchService } from 'src/tournament/services/match.service';
 import { Repository } from 'typeorm';
 import { UpdatePoolMatchesDto } from '../dto';
+import { PoolMatchDto } from '../dto/pool-match.dto';
 import { Pool, PoolMatch } from '../entities';
 
 @Injectable()
@@ -14,6 +20,7 @@ export class PoolMatchService extends TransactionFor<PoolMatchService> {
     @InjectRepository(PoolMatch)
     private readonly poolMatchRepository: Repository<PoolMatch>,
     private readonly tournamentMatchService: MatchService,
+    private readonly teamService: TeamService,
     moduleRef: ModuleRef,
   ) {
     super(moduleRef);
@@ -69,9 +76,21 @@ export class PoolMatchService extends TransactionFor<PoolMatchService> {
     const poolMatchesPromises = newPoolMatches.map((poolMatch) => {
       return this.updatePoolMatch(poolId, poolMatch);
     });
+    return Promise.all(poolMatchesPromises);
   }
 
-  async updatePoolMatch(poolId: number, changes: PoolMatch //Interface or dto?) {
-    const poolMatch = await this.findOne(changes.id);
+  async updatePoolMatch(poolId: number, changes: PoolMatchDto) {
+    const poolMatch = await this.findOne(changes.poolMatchId);
+    if (poolMatch.poolId !== poolId) {
+      throw new BadRequestException(
+        `Pool-match with id '${changes.poolMatchId}' don't belongs to pool with id '${poolId}'.`,
+      );
+    }
+    const localTeam = await this.teamService.findOneById(changes.localId);
+    const visitTeam = await this.teamService.findOneById(changes.visitId);
+    poolMatch.local = localTeam;
+    poolMatch.visit = visitTeam;
+    poolMatch.isPredicted = true;
+    return this.poolMatchRepository.save(poolMatch);
   }
 }

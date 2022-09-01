@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   HttpCode,
+  HttpException,
   Param,
   ParseIntPipe,
   Put,
@@ -53,14 +54,26 @@ export class PoolController {
   @UseGuards(IsPoolOwnerGuard)
   @Put(':poolId/update-pool-matches')
   @ApiOkResponse({ status: 204 })
+  @HttpCode(204)
   async updatePoolMatches(
     @Param('poolId', ParseIntPipe) poolId: number,
     @Body() data: UpdatePoolMatchesDto,
   ) {
-    const membership = await this.dataSource.transaction((manager) => {
+    const poolMatches = await this.dataSource.transaction((manager) => {
       return this.poolMatchService
         .withTransaction(manager)
         .updateAllPoolMatches(poolId, data);
     });
+    if (poolMatches.length === 64) {
+      return {
+        message: 'Pool matches successfully updated.',
+        status: 204,
+      };
+    } else {
+      throw new HttpException(
+        `Something went wrong while updating all 64 pool matches.`,
+        500,
+      );
+    }
   }
 }

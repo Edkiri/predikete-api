@@ -16,18 +16,22 @@ import { PoolMatch } from './pool-match.entity';
 
 @Entity({ name: 'pool' })
 export class Pool extends BaseEntity {
-  @ApiModelProperty({ type: () => User })
+  @Exclude()
   @ManyToOne(() => User, { eager: true })
   @JoinColumn({ name: 'owner_id' })
   owner!: User;
+
+  @ApiModelProperty()
+  @RelationId((pool: Pool) => pool.owner)
+  ownerId!: number;
 
   @Exclude()
   @ManyToOne(() => Group, (group) => group.pools)
   @JoinColumn({ name: 'group_id' })
   group!: Group;
 
-  @RelationId((pool: Pool) => pool.group)
   @ApiModelProperty()
+  @RelationId((pool: Pool) => pool.group)
   groupId!: number;
 
   @Exclude()

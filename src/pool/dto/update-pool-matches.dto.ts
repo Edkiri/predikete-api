@@ -5,13 +5,13 @@ import {
   ArrayNotContains,
   IsArray,
 } from 'class-validator';
-import { PoolMatch } from '../entities';
+import { PoolMatchDto } from './pool-match.dto';
 
 export class UpdatePoolMatchesDto {
-  @Type(() => PoolMatch)
+  @Type(() => PoolMatchDto)
   @IsArray()
   @ArrayMinSize(64)
   @ArrayMaxSize(64)
   @ArrayNotContains([null, undefined])
-  poolMatches!: PoolMatch[];
+  poolMatches!: PoolMatchDto[];
 }

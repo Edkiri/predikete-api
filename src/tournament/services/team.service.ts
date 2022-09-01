@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Team } from '../entities/team.entity';
@@ -29,6 +29,16 @@ export class TeamService {
       return this.teamRepository.save(newTeam);
     });
     return Promise.all(teamPromises);
+  }
+
+  async findOneById(teamId: number) {
+    const team = await this.teamRepository.findOne({
+      where: { id: teamId },
+    });
+    if (!team) {
+      throw new NotFoundException(`Not found team with id '${teamId}'.`);
+    }
+    return team;
   }
 
   async findOneByName(name: string): Promise<Team | null> {

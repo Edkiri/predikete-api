@@ -11,6 +11,6 @@ import {
 @Module({
   imports: [TypeOrmModule.forFeature([Tournament, Team, GroupStage, Match])],
   providers: [TournamentService, TeamService, GroupStageService, MatchService],
-  exports: [TournamentService, MatchService],
+  exports: [TournamentService, MatchService, TeamService],
 })
 export class TournamentModule {}

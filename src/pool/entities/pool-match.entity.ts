@@ -1,4 +1,11 @@
-import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  RelationId,
+} from 'typeorm';
 import { Pool } from './pool.entity';
 import { Match } from '../../tournament/entities/match.entity';
 import { MatchBaseModel } from '../../tournament/entities/match.entity-abs';
@@ -17,11 +24,19 @@ export class PoolMatch extends MatchBaseModel {
   @Index()
   pool!: Pool;
 
+  @RelationId((poolMatch: PoolMatch) => poolMatch.pool)
+  @ApiModelProperty()
+  poolId: number;
+
   @Exclude()
   @ManyToOne(() => Match)
   @JoinColumn({ name: 'tournament_match_id' })
   @Index()
   tournamentMatch!: Match;
+
+  @Exclude()
+  @Column({ type: 'boolean', name: 'is_predicted', default: false })
+  isPredicted!: boolean;
 
   @Exclude()
   @Column({ name: 'is_calculated', type: 'boolean', default: false })
