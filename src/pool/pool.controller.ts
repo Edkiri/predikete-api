@@ -51,6 +51,7 @@ export class PoolController {
     return this.poolService.findPoolMatchesByPoolId(+poolId);
   }
 
+  // TODO: Test this using ui
   @UseGuards(IsPoolOwnerGuard)
   @Put(':poolId/update-pool-matches')
   @ApiOkResponse({ status: 204 })

@@ -86,4 +86,11 @@ export class MembershipService extends TransactionFor<MembershipService> {
     });
     return adminMemberships;
   }
+
+  async findGroupsByUser(userId: number) {
+    const memberships = await this.membershipRepository.find({
+      where: { user: { id: userId } },
+    });
+    return memberships.map((membership) => membership.group);
+  }
 }

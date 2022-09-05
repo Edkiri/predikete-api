@@ -63,6 +63,7 @@ const storage = {
 @ApiBearerAuth()
 @Controller('group')
 @UseGuards(JwtAuthGuard)
+// eslint-disable-next-line @darraghor/nestjs-typed/controllers-should-supply-api-tags
 export class GroupController {
   constructor(
     private readonly membershipService: MembershipService,
@@ -88,6 +89,14 @@ export class GroupController {
         .withTransaction(manager)
         .createGroupMembershipAndPool(data, sub);
     });
+  }
+
+  @ApiTags('group')
+  @Get('my-groups')
+  @ApiOkResponse({ type: Group, isArray: true })
+  getUserGroups(@Req() req: Request) {
+    const { sub } = req.user as PayloadToken;
+    return this.membershipService.findGroupsByUser(+sub);
   }
 
   @ApiTags('group')
