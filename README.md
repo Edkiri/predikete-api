@@ -30,3 +30,4 @@ Aplicación web para torneos de fútbol donde los usuarios pueden predecir el re
 * Passport
 * Luxon
 * Docker
+* [Predikete UI](https://github.com/Edkiri/predikete-ui)
